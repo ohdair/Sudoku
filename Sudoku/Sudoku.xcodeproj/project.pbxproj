@@ -12,6 +12,8 @@
 		F60BB9452B031BD9005137FE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9442B031BD9005137FE /* ViewController.swift */; };
 		F60BB94A2B031BDA005137FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F60BB9492B031BDA005137FE /* Assets.xcassets */; };
 		F60BB94D2B031BDA005137FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F60BB94B2B031BDA005137FE /* LaunchScreen.storyboard */; };
+		F60BB9562B031F34005137FE /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9552B031F34005137FE /* GameButton.swift */; };
+		F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9582B0321D6005137FE /* TimeInterval.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		F60BB9492B031BDA005137FE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F60BB94C2B031BDA005137FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F60BB94E2B031BDA005137FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F60BB9552B031F34005137FE /* GameButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButton.swift; sourceTree = "<group>"; };
+		F60BB9582B0321D6005137FE /* TimeInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +58,8 @@
 		F60BB93F2B031BD9005137FE /* Sudoku */ = {
 			isa = PBXGroup;
 			children = (
+				F60BB9572B0321C4005137FE /* Extension */,
+				F60BB9542B031F22005137FE /* View */,
 				F60BB9402B031BD9005137FE /* AppDelegate.swift */,
 				F60BB9422B031BD9005137FE /* SceneDelegate.swift */,
 				F60BB9442B031BD9005137FE /* ViewController.swift */,
@@ -62,6 +68,22 @@
 				F60BB94E2B031BDA005137FE /* Info.plist */,
 			);
 			path = Sudoku;
+			sourceTree = "<group>";
+		};
+		F60BB9542B031F22005137FE /* View */ = {
+			isa = PBXGroup;
+			children = (
+				F60BB9552B031F34005137FE /* GameButton.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		F60BB9572B0321C4005137FE /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				F60BB9582B0321D6005137FE /* TimeInterval.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,6 +157,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F60BB9452B031BD9005137FE /* ViewController.swift in Sources */,
+				F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */,
+				F60BB9562B031F34005137FE /* GameButton.swift in Sources */,
 				F60BB9412B031BD9005137FE /* AppDelegate.swift in Sources */,
 				F60BB9432B031BD9005137FE /* SceneDelegate.swift in Sources */,
 			);
