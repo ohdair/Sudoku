@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		F60B9D6E2B0AF5F70036AA1B /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60B9D6D2B0AF5F70036AA1B /* UIColor.swift */; };
+		F60B9D702B0B04CC0036AA1B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60B9D6F2B0B04CC0036AA1B /* GameViewController.swift */; };
 		F60BB9412B031BD9005137FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9402B031BD9005137FE /* AppDelegate.swift */; };
 		F60BB9432B031BD9005137FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9422B031BD9005137FE /* SceneDelegate.swift */; };
-		F60BB9452B031BD9005137FE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9442B031BD9005137FE /* ViewController.swift */; };
+		F60BB9452B031BD9005137FE /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9442B031BD9005137FE /* HomeViewController.swift */; };
 		F60BB94A2B031BDA005137FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F60BB9492B031BDA005137FE /* Assets.xcassets */; };
 		F60BB94D2B031BDA005137FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F60BB94B2B031BDA005137FE /* LaunchScreen.storyboard */; };
 		F60BB9562B031F34005137FE /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9552B031F34005137FE /* GameButton.swift */; };
@@ -19,10 +20,11 @@
 
 /* Begin PBXFileReference section */
 		F60B9D6D2B0AF5F70036AA1B /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		F60B9D6F2B0B04CC0036AA1B /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		F60BB93D2B031BD9005137FE /* Sudoku.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sudoku.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F60BB9402B031BD9005137FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F60BB9422B031BD9005137FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		F60BB9442B031BD9005137FE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F60BB9442B031BD9005137FE /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		F60BB9492B031BDA005137FE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F60BB94C2B031BDA005137FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F60BB94E2B031BDA005137FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -64,7 +66,8 @@
 				F60BB9542B031F22005137FE /* View */,
 				F60BB9402B031BD9005137FE /* AppDelegate.swift */,
 				F60BB9422B031BD9005137FE /* SceneDelegate.swift */,
-				F60BB9442B031BD9005137FE /* ViewController.swift */,
+				F60BB9442B031BD9005137FE /* HomeViewController.swift */,
+				F60B9D6F2B0B04CC0036AA1B /* GameViewController.swift */,
 				F60BB9492B031BDA005137FE /* Assets.xcassets */,
 				F60BB94B2B031BDA005137FE /* LaunchScreen.storyboard */,
 				F60BB94E2B031BDA005137FE /* Info.plist */,
@@ -159,7 +162,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F60BB9452B031BD9005137FE /* ViewController.swift in Sources */,
+				F60B9D702B0B04CC0036AA1B /* GameViewController.swift in Sources */,
+				F60BB9452B031BD9005137FE /* HomeViewController.swift in Sources */,
 				F60B9D6E2B0AF5F70036AA1B /* UIColor.swift in Sources */,
 				F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */,
 				F60BB9562B031F34005137FE /* GameButton.swift in Sources */,

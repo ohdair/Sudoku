@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  HomeViewController.swift
 //  Sudoku
 //
 //  Created by 박재우 on 11/14/23.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class HomeViewController: UIViewController {
     private let newGameButton = GameButton(type: .new)
     private let continueGameButton = GameButton(type: .continue)
 
@@ -22,6 +22,7 @@ class ViewController: UIViewController {
         view.backgroundColor = .systemBackground
 
         continueGameButton.setSubtitle(timer: TimeInterval())
+        newGameButton.addTarget(self, action: #selector(tappedNewGameButton), for: .touchDown)
     }
 
     private func setLayout() {
@@ -42,6 +43,11 @@ class ViewController: UIViewController {
             continueGameButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             continueGameButton.bottomAnchor.constraint(equalTo: newGameButton.topAnchor, constant: -30)
         ])
+    }
+
+    @objc func tappedNewGameButton(_ sender: UIButton) {
+        let gameViewController = GameViewController()
+        self.navigationController?.pushViewController(gameViewController, animated: true)
     }
 }
 
