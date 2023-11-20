@@ -8,26 +8,8 @@
 import UIKit
 
 class GameViewController: UIViewController {
-    private lazy var leftBarButton = {
-        let barButtonItem = UIBarButtonItem()
-        let image = UIImage(systemName: "chevron.backward")?.withTintColor(.darkMainColor2, renderingMode: .alwaysOriginal)
-
-        barButtonItem.target = self
-        barButtonItem.action = #selector(self.tappedleftBarButton)
-        barButtonItem.image = image
-
-        return barButtonItem
-    }()
-
-    private lazy var rightBarButton = {
-        let barButtonItem = UIBarButtonItem()
-        let image = UIImage(systemName: "pause.circle")?.withTintColor(.darkMainColor2, renderingMode: .alwaysOriginal)
-        barButtonItem.target = self
-        barButtonItem.action = #selector(self.tappedRightBarButton)
-        barButtonItem.image = image
-
-        return barButtonItem
-    }()
+    private lazy var backBarButtonItem = UIBarButtonItem.back(self, selector: #selector(tappedBackBarButton))
+    private lazy var pauseBarButtonItem = UIBarButtonItem.pause(self, selector: #selector(tappedPauseBarButton))
 
     private var isTimerRun: Bool = true
 
@@ -40,20 +22,19 @@ class GameViewController: UIViewController {
 
     private func setUI() {
         self.title = "Sudoku"
-        self.navigationController?.navigationBar.titleTextAttributes = [.font: UIFont.systemFont(ofSize: 22, weight: .bold),
-                                                                        .foregroundColor: UIColor.darkMainColor2]
-        self.navigationItem.leftBarButtonItem = leftBarButton
-        self.navigationItem.rightBarButtonItem = rightBarButton
+        let navigationBar = self.navigationController?.navigationBar
+        navigationBar?.titleTextAttributes = [.font: UIFont.systemFont(ofSize: 22, weight: .bold),
+                                              .foregroundColor: UIColor.darkMainColor2]
+        self.navigationItem.leftBarButtonItem = backBarButtonItem
+        self.navigationItem.rightBarButtonItem = pauseBarButtonItem
     }
 
-    @objc private func tappedleftBarButton(_ sender: UIButton) {
+    @objc private func tappedBackBarButton(_ sender: UIBarButtonItem) {
         self.navigationController?.popViewController(animated: true)
     }
 
-    @objc private func tappedRightBarButton(_ sender: UIButton) {
+    @objc private func tappedPauseBarButton(_ sender: UIBarButtonItem) {
         isTimerRun.toggle()
-        rightBarButton.image = isTimerRun ?
-        UIImage(systemName: "pause.circle")?.withTintColor(.darkMainColor2, renderingMode: .alwaysOriginal) :
-        UIImage(systemName: "play.circle")?.withTintColor(.darkMainColor2, renderingMode: .alwaysOriginal)
+        pauseBarButtonItem.image = isTimerRun ? UIImage(systemName: "pause.circle") : UIImage(systemName: "play.circle")
     }
 }
