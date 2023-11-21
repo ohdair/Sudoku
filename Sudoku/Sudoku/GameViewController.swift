@@ -68,6 +68,6 @@ class GameViewController: UIViewController {
     }
 
     @objc private func tappedMemoButton(_ sender: AbilityButton) {
-        sender.toggle()
+        sender.toggleMemo()
     }
 }
