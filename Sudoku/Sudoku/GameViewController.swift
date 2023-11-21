@@ -19,6 +19,12 @@ class GameViewController: UIViewController {
         return stackView
     }()
 
+    private var numberStackView = {
+        let stackView = UIStackView()
+        stackView.distribution = .equalCentering
+        return stackView
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -26,13 +32,17 @@ class GameViewController: UIViewController {
         setUI()
         setLayout()
 
-        for ability in AbilityButton.Ability.allCases {
+        AbilityButton.Ability.allCases.forEach { ability in
             let abilityButton = AbilityButton(of: ability)
             abilityStackView.addArrangedSubview(abilityButton)
 
             if ability == .memo {
                 abilityButton.addTarget(self, action: #selector(tappedMemoButton), for: .touchDown)
             }
+        }
+
+        stride(from: 1, through: 9, by: 1).forEach { number in
+            numberStackView.addArrangedSubview(NumberButton(number: number))
         }
     }
 
@@ -47,14 +57,21 @@ class GameViewController: UIViewController {
 
     private func setLayout() {
         view.addSubview(abilityStackView)
+        view.addSubview(numberStackView)
 
         abilityStackView.translatesAutoresizingMaskIntoConstraints = false
+        numberStackView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             abilityStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
             abilityStackView.heightAnchor.constraint(equalToConstant: 60),
-            abilityStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30),
-            abilityStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            abilityStackView.bottomAnchor.constraint(equalTo: numberStackView.topAnchor, constant: -30),
+            abilityStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+
+            numberStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
+            numberStackView.heightAnchor.constraint(equalToConstant: 60),
+            numberStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30),
+            numberStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
 
