@@ -13,6 +13,12 @@ class GameViewController: UIViewController {
 
     private var isTimerRun: Bool = true
 
+    private var informationStackView = {
+        let stackView = UIStackView()
+        stackView.distribution = .equalCentering
+        return stackView
+    }()
+
     private var abilityStackView = {
         let stackView = UIStackView()
         stackView.distribution = .equalCentering
@@ -31,6 +37,16 @@ class GameViewController: UIViewController {
 
         setUI()
         setLayout()
+
+        InformationView.Information.allCases.forEach { information in
+            let informationView = InformationView(type: information)
+
+            switch information {
+            case .difficulty: informationView.updateContent("쉬움")
+            case .mistake, .timer: informationView.updateContent(0)
+            }
+            informationStackView.addArrangedSubview(informationView)
+        }
 
         AbilityButton.Ability.allCases.forEach { ability in
             let abilityButton = AbilityButton(of: ability)
@@ -56,13 +72,19 @@ class GameViewController: UIViewController {
     }
 
     private func setLayout() {
+        view.addSubview(informationStackView)
         view.addSubview(abilityStackView)
         view.addSubview(numberStackView)
 
+        informationStackView.translatesAutoresizingMaskIntoConstraints = false
         abilityStackView.translatesAutoresizingMaskIntoConstraints = false
         numberStackView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
+            informationStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            informationStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
+            informationStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+
             abilityStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
             abilityStackView.heightAnchor.constraint(equalToConstant: 60),
             abilityStackView.bottomAnchor.constraint(equalTo: numberStackView.topAnchor, constant: -30),
