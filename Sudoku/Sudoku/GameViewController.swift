@@ -63,13 +63,11 @@ class GameViewController: UIViewController {
         numberStackView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            abilityStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
-            abilityStackView.heightAnchor.constraint(equalToConstant: 60),
+            abilityStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             abilityStackView.bottomAnchor.constraint(equalTo: numberStackView.topAnchor, constant: -30),
             abilityStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
             numberStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
-            numberStackView.heightAnchor.constraint(equalToConstant: 60),
             numberStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30),
             numberStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
