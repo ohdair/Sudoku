@@ -66,6 +66,7 @@ class AbilityButton: UIButton {
         NSLayoutConstraint.activate([
             abilityImageLabel.topAnchor.constraint(equalTo: self.topAnchor),
             abilityImageLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            abilityImageLabel.bottomAnchor.constraint(equalTo: abilityLabel.topAnchor, constant: -8),
             abilityImageLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor),
 
             abilityLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
