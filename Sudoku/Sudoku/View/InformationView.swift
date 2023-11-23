@@ -24,23 +24,14 @@ class InformationView: UIView {
         return imageViewLabel
     }()
 
-    private let type: Information
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-    init(type: Information) {
-        self.type = type
-
-        super.init(frame: .zero)
-
-        setUI()
         setLayout()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    private func setUI() {
-        titleLabel.text = type.title
     }
 
     private func setLayout() {
@@ -62,14 +53,15 @@ class InformationView: UIView {
         ])
     }
 
-    func updateContent(_ content: Any) {
+    func updateContent(by type: Information) {
+        titleLabel.text = type.title
         switch type {
-        case .difficulty:
-            contentLabel.text = "\(content)"
-        case .mistake:
+        case .difficulty(let content):
+            contentLabel.text = content
+        case .mistake(let content):
             contentLabel.text = "\(content) / 3"
-        case .timer:
-            contentLabel.text = updateTime(content as! Int)
+        case .timer(let content):
+            contentLabel.text = updateTime(content)
         }
     }
 
@@ -79,14 +71,13 @@ class InformationView: UIView {
 
         return String(format: "%02d:%02d", minutes, seconds)
     }
-
 }
 
 extension InformationView {
-    enum Information: CaseIterable {
-        case difficulty
-        case mistake
-        case timer
+    enum Information {
+        case difficulty(content: String)
+        case mistake(content: Int)
+        case timer(content: Int)
 
         fileprivate var title: String {
             switch self {

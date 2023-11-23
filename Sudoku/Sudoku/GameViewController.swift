@@ -38,15 +38,16 @@ class GameViewController: UIViewController {
         setUI()
         setLayout()
 
-        InformationView.Information.allCases.forEach { information in
-            let informationView = InformationView(type: information)
+        let difficultyView = InformationView()
+        difficultyView.updateContent(by: .difficulty(content: "쉬움"))
+        let mistakeView = InformationView()
+        mistakeView.updateContent(by: .mistake(content: 0))
+        let timerView = InformationView()
+        timerView.updateContent(by: .timer(content: 3))
 
-            switch information {
-            case .difficulty: informationView.updateContent("쉬움")
-            case .mistake, .timer: informationView.updateContent(0)
-            }
-            informationStackView.addArrangedSubview(informationView)
-        }
+        informationStackView.addArrangedSubview(difficultyView)
+        informationStackView.addArrangedSubview(mistakeView)
+        informationStackView.addArrangedSubview(timerView)
 
         AbilityButton.Ability.allCases.forEach { ability in
             let abilityButton = AbilityButton(of: ability)
