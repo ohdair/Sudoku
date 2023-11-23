@@ -13,7 +13,7 @@ class GameViewController: UIViewController {
 
     private let informationStackView = {
         let stackView = UIStackView()
-        stackView.distribution = .equalCentering
+        stackView.distribution = .fillEqually
         return stackView
     }()
 
@@ -87,7 +87,7 @@ class GameViewController: UIViewController {
         numberStackView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            informationStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            informationStackView.widthAnchor.constraint(equalTo: view.widthAnchor),
             informationStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
             informationStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
