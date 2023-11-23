@@ -19,6 +19,7 @@
 		F60B9D822B0DD2B00036AA1B /* SudokuData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60B9D812B0DD2B00036AA1B /* SudokuData.swift */; };
 		F60B9D842B0DD3030036AA1B /* GameDifficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60B9D832B0DD3030036AA1B /* GameDifficulty.swift */; };
 		F60B9D862B0DEAED0036AA1B /* InformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60B9D852B0DEAED0036AA1B /* InformationView.swift */; };
+		F60B9D8C2B0F19930036AA1B /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60B9D8B2B0F19930036AA1B /* Timer.swift */; };
 		F60BB9412B031BD9005137FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9402B031BD9005137FE /* AppDelegate.swift */; };
 		F60BB9432B031BD9005137FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9422B031BD9005137FE /* SceneDelegate.swift */; };
 		F60BB9452B031BD9005137FE /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9442B031BD9005137FE /* HomeViewController.swift */; };
@@ -41,6 +42,7 @@
 		F60B9D812B0DD2B00036AA1B /* SudokuData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuData.swift; sourceTree = "<group>"; };
 		F60B9D832B0DD3030036AA1B /* GameDifficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDifficulty.swift; sourceTree = "<group>"; };
 		F60B9D852B0DEAED0036AA1B /* InformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationView.swift; sourceTree = "<group>"; };
+		F60B9D8B2B0F19930036AA1B /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
 		F60BB93D2B031BD9005137FE /* Sudoku.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sudoku.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F60BB9402B031BD9005137FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F60BB9422B031BD9005137FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				F60BB9582B0321D6005137FE /* TimeInterval.swift */,
 				F60B9D6D2B0AF5F70036AA1B /* UIColor.swift */,
 				F60B9D712B0BA0520036AA1B /* UIBarButtonItem.swift */,
+				F60B9D8B2B0F19930036AA1B /* Timer.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -223,6 +226,7 @@
 				F60B9D842B0DD3030036AA1B /* GameDifficulty.swift in Sources */,
 				F60B9D762B0CA85A0036AA1B /* NumberButton.swift in Sources */,
 				F60B9D862B0DEAED0036AA1B /* InformationView.swift in Sources */,
+				F60B9D8C2B0F19930036AA1B /* Timer.swift in Sources */,
 				F60B9D7B2B0DD22E0036AA1B /* NetworkingError.swift in Sources */,
 				F60BB9432B031BD9005137FE /* SceneDelegate.swift in Sources */,
 			);

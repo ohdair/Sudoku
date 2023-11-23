@@ -11,39 +11,44 @@ class GameViewController: UIViewController {
     private lazy var backBarButtonItem = UIBarButtonItem.back(self, selector: #selector(tappedBackBarButton))
     private lazy var pauseBarButtonItem = UIBarButtonItem.pause(self, selector: #selector(tappedPauseBarButton))
 
-    private var isTimerRun: Bool = true
-
-    private var informationStackView = {
+    private let informationStackView = {
         let stackView = UIStackView()
         stackView.distribution = .equalCentering
         return stackView
     }()
 
-    private var abilityStackView = {
+    private let abilityStackView = {
         let stackView = UIStackView()
         stackView.distribution = .equalCentering
         return stackView
     }()
 
-    private var numberStackView = {
+    private let numberStackView = {
         let stackView = UIStackView()
         stackView.distribution = .equalCentering
         return stackView
     }()
+
+    private let difficultyView = InformationView()
+    private let mistakeView = InformationView()
+    private let timerView = InformationView()
+
+    var timer: Timer?
+    var time = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
 
+        timer = Timer.startRepeating(self, selector: #selector(runTime))
+        timer?.tolerance = 0.1
+
         setUI()
         setLayout()
 
-        let difficultyView = InformationView()
         difficultyView.updateContent(by: .difficulty(content: "쉬움"))
-        let mistakeView = InformationView()
         mistakeView.updateContent(by: .mistake(content: 0))
-        let timerView = InformationView()
-        timerView.updateContent(by: .timer(content: 3))
+        timerView.updateContent(by: .timer(content: time))
 
         informationStackView.addArrangedSubview(difficultyView)
         informationStackView.addArrangedSubview(mistakeView)
@@ -101,11 +106,21 @@ class GameViewController: UIViewController {
     }
 
     @objc private func tappedPauseBarButton(_ sender: UIBarButtonItem) {
-        isTimerRun.toggle()
-        pauseBarButtonItem.image = isTimerRun ? UIImage(systemName: "pause.circle") : UIImage(systemName: "play.circle")
+        if let timer, !timer.isValid {
+            pauseBarButtonItem.image = UIImage(systemName: "pause.circle")
+            self.timer = Timer.startRepeating(self, selector: #selector(runTime))
+        } else {
+            pauseBarButtonItem.image = UIImage(systemName: "play.circle")
+            timer?.invalidate()
+        }
     }
 
     @objc private func tappedMemoButton(_ sender: AbilityButton) {
         sender.toggleMemo()
+    }
+
+    @objc func runTime() {
+        time += 1
+        timerView.updateContent(by: .timer(content: time))
     }
 }
