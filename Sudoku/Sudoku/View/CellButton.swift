@@ -87,7 +87,7 @@ class CellButton: UIButton {
 
 extension CellButton {
     func number(to number: Int) {
-        resetMemoNumbers()
+        resetMemo()
 
         self.number = number
     }
@@ -95,10 +95,10 @@ extension CellButton {
     func reset() {
         number = nil
 
-        resetMemoNumbers()
+        resetMemo()
     }
 
-    func resetMemoNumbers() {
+    func resetMemo() {
         memoLabels.forEach {
             $0.isHidden = true
         }
