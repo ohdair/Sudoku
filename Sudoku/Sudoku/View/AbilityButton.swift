@@ -116,11 +116,11 @@ extension AbilityButton {
         var description: String {
             switch self {
             case .undo:
-                return "undo"
+                return "실행 취소"
             case .erase:
-                return "erase"
+                return "지우기"
             case .memo:
-                return "memo"
+                return "메모"
             }
         }
 

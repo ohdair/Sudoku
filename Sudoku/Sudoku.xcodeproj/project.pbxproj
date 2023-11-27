@@ -27,6 +27,9 @@
 		F60BB94D2B031BDA005137FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F60BB94B2B031BDA005137FE /* LaunchScreen.storyboard */; };
 		F60BB9562B031F34005137FE /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9552B031F34005137FE /* GameButton.swift */; };
 		F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9582B0321D6005137FE /* TimeInterval.swift */; };
+		F632725F2B13217E00F16FA8 /* CellButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F632725E2B13217E00F16FA8 /* CellButton.swift */; };
+		F63272612B1429DB00F16FA8 /* SectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63272602B1429DB00F16FA8 /* SectionView.swift */; };
+		F63272642B143B4000F16FA8 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63272632B143B4000F16FA8 /* BoardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +55,9 @@
 		F60BB94E2B031BDA005137FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F60BB9552B031F34005137FE /* GameButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButton.swift; sourceTree = "<group>"; };
 		F60BB9582B0321D6005137FE /* TimeInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
+		F632725E2B13217E00F16FA8 /* CellButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellButton.swift; sourceTree = "<group>"; };
+		F63272602B1429DB00F16FA8 /* SectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionView.swift; sourceTree = "<group>"; };
+		F63272632B143B4000F16FA8 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +132,9 @@
 				F60B9D732B0C9D740036AA1B /* AbilityButton.swift */,
 				F60B9D752B0CA85A0036AA1B /* NumberButton.swift */,
 				F60B9D852B0DEAED0036AA1B /* InformationView.swift */,
+				F632725E2B13217E00F16FA8 /* CellButton.swift */,
+				F63272602B1429DB00F16FA8 /* SectionView.swift */,
+				F63272632B143B4000F16FA8 /* BoardView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -211,6 +220,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F63272642B143B4000F16FA8 /* BoardView.swift in Sources */,
 				F60B9D702B0B04CC0036AA1B /* GameViewController.swift in Sources */,
 				F60B9D792B0DD1EB0036AA1B /* Networking.swift in Sources */,
 				F60BB9452B031BD9005137FE /* HomeViewController.swift in Sources */,
@@ -223,7 +233,9 @@
 				F60B9D822B0DD2B00036AA1B /* SudokuData.swift in Sources */,
 				F60B9D802B0DD2800036AA1B /* SudokuBoardDTO.swift in Sources */,
 				F60B9D722B0BA0520036AA1B /* UIBarButtonItem.swift in Sources */,
+				F63272612B1429DB00F16FA8 /* SectionView.swift in Sources */,
 				F60B9D842B0DD3030036AA1B /* GameDifficulty.swift in Sources */,
+				F632725F2B13217E00F16FA8 /* CellButton.swift in Sources */,
 				F60B9D762B0CA85A0036AA1B /* NumberButton.swift in Sources */,
 				F60B9D862B0DEAED0036AA1B /* InformationView.swift in Sources */,
 				F60B9D8C2B0F19930036AA1B /* Timer.swift in Sources */,
