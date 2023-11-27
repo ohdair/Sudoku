@@ -28,6 +28,7 @@
 		F60BB9562B031F34005137FE /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9552B031F34005137FE /* GameButton.swift */; };
 		F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9582B0321D6005137FE /* TimeInterval.swift */; };
 		F632725F2B13217E00F16FA8 /* CellButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F632725E2B13217E00F16FA8 /* CellButton.swift */; };
+		F63272612B1429DB00F16FA8 /* SectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63272602B1429DB00F16FA8 /* SectionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 		F60BB9552B031F34005137FE /* GameButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButton.swift; sourceTree = "<group>"; };
 		F60BB9582B0321D6005137FE /* TimeInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
 		F632725E2B13217E00F16FA8 /* CellButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellButton.swift; sourceTree = "<group>"; };
+		F63272602B1429DB00F16FA8 /* SectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 				F60B9D752B0CA85A0036AA1B /* NumberButton.swift */,
 				F60B9D852B0DEAED0036AA1B /* InformationView.swift */,
 				F632725E2B13217E00F16FA8 /* CellButton.swift */,
+				F63272602B1429DB00F16FA8 /* SectionView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -226,6 +229,7 @@
 				F60B9D822B0DD2B00036AA1B /* SudokuData.swift in Sources */,
 				F60B9D802B0DD2800036AA1B /* SudokuBoardDTO.swift in Sources */,
 				F60B9D722B0BA0520036AA1B /* UIBarButtonItem.swift in Sources */,
+				F63272612B1429DB00F16FA8 /* SectionView.swift in Sources */,
 				F60B9D842B0DD3030036AA1B /* GameDifficulty.swift in Sources */,
 				F632725F2B13217E00F16FA8 /* CellButton.swift in Sources */,
 				F60B9D762B0CA85A0036AA1B /* NumberButton.swift in Sources */,
