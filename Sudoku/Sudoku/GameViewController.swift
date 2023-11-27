@@ -56,7 +56,10 @@ class GameViewController: UIViewController {
         informationStackView.addArrangedSubview(mistakeView)
         informationStackView.addArrangedSubview(timerView)
 
-
+        // MARK: - Board Test
+        boardView.sections.forEach { sectionView in
+            sectionView.delegate = self
+        }
 
         AbilityButton.Ability.allCases.forEach { ability in
             let abilityButton = AbilityButton(of: ability)
@@ -133,5 +136,11 @@ class GameViewController: UIViewController {
     @objc func runTime() {
         time += 1
         timerView.updateContent(by: .timer(content: time))
+    }
+}
+
+extension GameViewController: SectionViewDelegate {
+    func cellButtonTapped(_ button: CellButton) {
+        print(button.indexPath)
     }
 }
