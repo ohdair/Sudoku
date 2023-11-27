@@ -8,6 +8,7 @@
 import UIKit
 
 class CellButton: UIButton {
+    let indexPath: IndexPath
     private let numberLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
@@ -21,7 +22,9 @@ class CellButton: UIButton {
         }
     }
 
-    init() {
+    init(item: Int, section: Int) {
+        indexPath = IndexPath(item: item, section: section)
+
         super.init(frame: .zero)
 
         setUI()
