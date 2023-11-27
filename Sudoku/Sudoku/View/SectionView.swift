@@ -36,7 +36,7 @@ class SectionView: UIView {
     }
 
     private func setUI() {
-        layer.borderColor = UIColor.systemGray3.cgColor
+        layer.borderColor = UIColor.systemGray.cgColor
         layer.borderWidth = 1
     }
 

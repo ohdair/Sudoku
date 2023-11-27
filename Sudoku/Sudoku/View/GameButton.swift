@@ -45,7 +45,7 @@ extension GameButton {
         var backgroundColor: UIColor {
             switch self {
             case .new:
-                return .white
+                return .systemBackground
             case .continue:
                 return .mainBlue
             }
