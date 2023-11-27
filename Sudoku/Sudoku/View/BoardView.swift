@@ -48,3 +48,27 @@ class BoardView: UIView {
         }
     }
 }
+
+extension BoardView {
+    func row(associated indexPath: IndexPath) -> [CellButton] {
+        let sectionViews = sections.filter { $0.section / 3 == indexPath.section / 3 }
+
+        return sectionViews
+            .flatMap { $0.buttons }
+            .filter { $0.indexPath != indexPath && $0.indexPath.item / 3 == indexPath.item / 3 }
+    }
+
+    func column(associated indexPath: IndexPath) -> [CellButton] {
+        let sectionViews = sections.filter { $0.section % 3 == indexPath.section % 3 }
+
+        return sectionViews
+            .flatMap { $0.buttons }
+            .filter { $0.indexPath != indexPath && $0.indexPath.item % 3 == indexPath.item % 3 }
+    }
+
+    func section(associated indexPath: IndexPath) -> [CellButton] {
+        let buttons = sections[indexPath.section].buttons
+
+        return buttons.filter { $0.indexPath != indexPath }
+    }
+}

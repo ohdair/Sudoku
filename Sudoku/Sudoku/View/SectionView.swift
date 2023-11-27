@@ -13,8 +13,8 @@ protocol SectionViewDelegate: AnyObject {
 
 class SectionView: UIView {
     weak var delegate: SectionViewDelegate?
-    private let section: Int
-    private var buttons = [CellButton]()
+    private(set) var section: Int
+    private(set) var buttons = [CellButton]()
 
     init(section: Int) {
         self.section = section
