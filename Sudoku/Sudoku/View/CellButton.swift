@@ -124,7 +124,7 @@ extension CellButton {
         case .mistake:
             backgroundColor = .systemRed.withAlphaComponent(0.3)
         case .normal:
-            backgroundColor = .clear
+            backgroundColor = nil
         }
     }
 

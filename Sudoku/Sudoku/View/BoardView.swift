@@ -50,15 +50,47 @@ class BoardView: UIView {
 }
 
 extension BoardView {
-    func row(associated indexPath: IndexPath) -> [CellButton] {
+    func paint(associated button: CellButton) {
+        paintedReset()
+
+        let buttonsAssociatedCursor = buttons(associated: button)
+        buttonsAssociatedCursor.forEach { $0.paintedBackground(according: .associatedCursor) }
+
+        let numbers = numbers(associated: button)
+        numbers.forEach { $0.paintedBackground(according: .associatedNumber) }
+
+        let mistakeButtons = buttonsAssociatedCursor.filter { button.number != nil && $0.number == button.number }
+        mistakeButtons.forEach { $0.paintedBackground(according: .mistake) }
+
+        if !mistakeButtons.isEmpty {
+            button.paintedTextColor(according: .mistake)
+        }
+
+        button.paintedBackground(according: .selected)
+    }
+
+    func paintedReset() {
+        sections
+            .flatMap { $0.buttons }
+            .forEach { $0.paintedBackground(according: .normal) }
+    }
+
+    private func buttons(associated button: CellButton) -> [CellButton] {
+        let row = row(associated: button.indexPath)
+        let column = column(associated: button.indexPath)
+        let section = section(associated: button.indexPath)
+        return row + column + section
+    }
+
+    private func row(associated indexPath: IndexPath) -> [CellButton] {
         let sectionViews = sections.filter { $0.section / 3 == indexPath.section / 3 }
 
         return sectionViews
-            .flatMap { $0.buttons }
+            .flatMap {$0.buttons }
             .filter { $0.indexPath != indexPath && $0.indexPath.item / 3 == indexPath.item / 3 }
     }
 
-    func column(associated indexPath: IndexPath) -> [CellButton] {
+    private func column(associated indexPath: IndexPath) -> [CellButton] {
         let sectionViews = sections.filter { $0.section % 3 == indexPath.section % 3 }
 
         return sectionViews
@@ -66,9 +98,15 @@ extension BoardView {
             .filter { $0.indexPath != indexPath && $0.indexPath.item % 3 == indexPath.item % 3 }
     }
 
-    func section(associated indexPath: IndexPath) -> [CellButton] {
+    private func section(associated indexPath: IndexPath) -> [CellButton] {
         let buttons = sections[indexPath.section].buttons
 
         return buttons.filter { $0.indexPath != indexPath }
+    }
+
+    private func numbers(associated button: CellButton) -> [CellButton] {
+        return sections
+            .flatMap { $0.buttons }
+            .filter { button.number != nil && $0.indexPath != button.indexPath && $0.number == button.number }
     }
 }

@@ -144,24 +144,6 @@ extension GameViewController: SectionViewDelegate {
     func cellButtonTapped(_ button: CellButton) {
         cursor = button.indexPath
 
-        guard let cursor else {
-            return
-        }
-
-        let row = boardView.row(associated: cursor)
-        let column = boardView.column(associated: cursor)
-        let section = boardView.section(associated: cursor)
-
-        row.forEach {
-            $0.paintedBackground(according: .associatedCursor)
-        }
-        column.forEach {
-            $0.paintedBackground(according: .associatedCursor)
-        }
-        section.forEach {
-            $0.paintedBackground(according: .associatedCursor)
-        }
-
-        button.paintedBackground(according: .selected)
+        boardView.paint(associated: button)
     }
 }
