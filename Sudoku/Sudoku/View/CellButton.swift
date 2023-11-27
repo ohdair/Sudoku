@@ -114,4 +114,36 @@ extension CellButton {
 
         memoLabels[number - 1].isHidden.toggle()
     }
+
+    func paintedBackground(according state: State) {
+        switch state {
+        case .selected, .associatedNumber:
+            backgroundColor = .brightMainColor1
+        case .associatedCursor:
+            backgroundColor = .brightMainColor2
+        case .mistake:
+            backgroundColor = .systemRed.withAlphaComponent(0.3)
+        case .normal:
+            backgroundColor = .clear
+        }
+    }
+
+    func paintedTextColor(according state: State) {
+        switch state {
+        case .mistake:
+            numberLabel.textColor = .red
+        default:
+            numberLabel.textColor = .darkMainColor1
+        }
+    }
+}
+
+extension CellButton {
+    enum State {
+        case associatedNumber
+        case associatedCursor
+        case selected
+        case mistake
+        case normal
+    }
 }
