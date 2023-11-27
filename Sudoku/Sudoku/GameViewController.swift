@@ -17,6 +17,8 @@ class GameViewController: UIViewController {
         return stackView
     }()
 
+    private let boardView = BoardView()
+
     private let abilityStackView = {
         let stackView = UIStackView()
         stackView.distribution = .equalCentering
@@ -54,6 +56,8 @@ class GameViewController: UIViewController {
         informationStackView.addArrangedSubview(mistakeView)
         informationStackView.addArrangedSubview(timerView)
 
+
+
         AbilityButton.Ability.allCases.forEach { ability in
             let abilityButton = AbilityButton(of: ability)
             abilityStackView.addArrangedSubview(abilityButton)
@@ -79,10 +83,12 @@ class GameViewController: UIViewController {
 
     private func setLayout() {
         view.addSubview(informationStackView)
+        view.addSubview(boardView)
         view.addSubview(abilityStackView)
         view.addSubview(numberStackView)
 
         informationStackView.translatesAutoresizingMaskIntoConstraints = false
+        boardView.translatesAutoresizingMaskIntoConstraints = false
         abilityStackView.translatesAutoresizingMaskIntoConstraints = false
         numberStackView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -91,12 +97,17 @@ class GameViewController: UIViewController {
             informationStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
             informationStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
+            boardView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -10),
+            boardView.heightAnchor.constraint(equalTo: boardView.widthAnchor),
+            boardView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            boardView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -20),
+
             abilityStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            abilityStackView.bottomAnchor.constraint(equalTo: numberStackView.topAnchor, constant: -30),
+            abilityStackView.topAnchor.constraint(equalTo: boardView.bottomAnchor, constant: 30),
             abilityStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
             numberStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
-            numberStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30),
+            numberStackView.topAnchor.constraint(equalTo: abilityStackView.bottomAnchor, constant: 30),
             numberStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
