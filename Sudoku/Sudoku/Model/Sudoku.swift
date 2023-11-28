@@ -11,15 +11,12 @@ struct Sudoku {
     var data: SudokuData
     var time: Int = 0
     var mistake: Int = 0
-    var solving: [[SudokuItem]]
+    var board: [[SudokuItem]]
     var history: [[[SudokuItem]]] = []
 
-    init(data: SudokuData, time: Int, mistake: Int, solving: [[SudokuItem]], history: [[[SudokuItem]]]) {
+    init(data: SudokuData) {
         self.data = data
-        self.time = time
-        self.mistake = mistake
-        self.history = history
-        self.solving = data.problem.map { row in
+        self.board = data.problem.map { row in
             row.map { SudokuItem(number: $0) }
         }
     }

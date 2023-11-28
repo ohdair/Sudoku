@@ -49,7 +49,7 @@ class BoardView: UIView {
     }
 }
 
-extension BoardView {
+extension BoardView: IndexPathable {
     func paint(associated button: CellButton) {
         paintedReset()
 
@@ -108,5 +108,18 @@ extension BoardView {
         return sections
             .flatMap { $0.buttons }
             .filter { button.number != nil && $0.indexPath != button.indexPath && $0.number == button.number }
+    }
+
+    func updateAll(_ board: [[Int]]) {
+        conform(board) { (indexPath, number) in
+            let cellButton = cellButton(item: indexPath.item, section: indexPath.section)
+            if number != 0 {
+                cellButton.number(to: number)
+            }
+        }
+    }
+
+    private func cellButton(item: Int, section: Int) -> CellButton {
+        return sections[section].buttons[item]
     }
 }

@@ -32,6 +32,8 @@
 		F63272642B143B4000F16FA8 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63272632B143B4000F16FA8 /* BoardView.swift */; };
 		F6EF981F2B15C520005FEA99 /* Sudoku.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EF981E2B15C520005FEA99 /* Sudoku.swift */; };
 		F6EF98222B15C844005FEA99 /* SudokuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EF98212B15C844005FEA99 /* SudokuItem.swift */; };
+		F6EF98242B15D8BC005FEA99 /* Cursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EF98232B15D8BC005FEA99 /* Cursor.swift */; };
+		F6EF98282B15F5CD005FEA99 /* IndexPathable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EF98272B15F5CD005FEA99 /* IndexPathable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +64,8 @@
 		F63272632B143B4000F16FA8 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 		F6EF981E2B15C520005FEA99 /* Sudoku.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sudoku.swift; sourceTree = "<group>"; };
 		F6EF98212B15C844005FEA99 /* SudokuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuItem.swift; sourceTree = "<group>"; };
+		F6EF98232B15D8BC005FEA99 /* Cursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cursor.swift; sourceTree = "<group>"; };
+		F6EF98272B15F5CD005FEA99 /* IndexPathable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexPathable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +86,8 @@
 				F6EF98202B15C823005FEA99 /* Network */,
 				F6EF981E2B15C520005FEA99 /* Sudoku.swift */,
 				F6EF98212B15C844005FEA99 /* SudokuItem.swift */,
+				F6EF98232B15D8BC005FEA99 /* Cursor.swift */,
+				F6EF98272B15F5CD005FEA99 /* IndexPathable.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -239,6 +245,7 @@
 				F6EF981F2B15C520005FEA99 /* Sudoku.swift in Sources */,
 				F6EF98222B15C844005FEA99 /* SudokuItem.swift in Sources */,
 				F60B9D792B0DD1EB0036AA1B /* Networking.swift in Sources */,
+				F6EF98242B15D8BC005FEA99 /* Cursor.swift in Sources */,
 				F60BB9452B031BD9005137FE /* HomeViewController.swift in Sources */,
 				F60B9D6E2B0AF5F70036AA1B /* UIColor.swift in Sources */,
 				F60B9D7E2B0DD2670036AA1B /* SudokuDataDTO.swift in Sources */,
@@ -246,6 +253,7 @@
 				F60B9D742B0C9D740036AA1B /* AbilityButton.swift in Sources */,
 				F60BB9562B031F34005137FE /* GameButton.swift in Sources */,
 				F60BB9412B031BD9005137FE /* AppDelegate.swift in Sources */,
+				F6EF98282B15F5CD005FEA99 /* IndexPathable.swift in Sources */,
 				F60B9D822B0DD2B00036AA1B /* SudokuData.swift in Sources */,
 				F60B9D802B0DD2800036AA1B /* SudokuBoardDTO.swift in Sources */,
 				F60B9D722B0BA0520036AA1B /* UIBarButtonItem.swift in Sources */,

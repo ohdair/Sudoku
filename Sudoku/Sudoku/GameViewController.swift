@@ -43,6 +43,22 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
 
+        // MARK: - API 호출
+        Networking().loadData { result in
+            switch result {
+            case .success(let success):
+                guard let success else { return }
+                let problem = success.problem
+                
+                DispatchQueue.main.async {
+                    self.boardView.updateAll(problem)
+                    self.difficultyView.updateContent(by: .difficulty(content: success.difficulty.discription))
+                }
+            case .failure(let failure):
+                print(failure)
+            }
+        }
+
         timer = Timer.startRepeating(self, selector: #selector(runTime))
         timer?.tolerance = 0.1
 
