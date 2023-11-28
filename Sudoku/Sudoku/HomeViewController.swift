@@ -47,6 +47,10 @@ class HomeViewController: UIViewController {
 
     @objc func tappedNewGameButton(_ sender: UIButton) {
         let gameViewController = GameViewController()
+        if let savedSudoku = UserDefaults.standard.object(forKey: "Sudoku") as? Data,
+           let loadedSudoku = try? JSONDecoder().decode(Sudoku.self, from: savedSudoku) {
+            gameViewController.sudoku = loadedSudoku
+        }
         self.navigationController?.pushViewController(gameViewController, animated: true)
     }
 }

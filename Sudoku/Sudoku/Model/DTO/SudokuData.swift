@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SudokuData: Decodable {
+struct SudokuData: Codable {
     let problem: [[Int]]
     let solution: [[Int]]
     let difficulty: GameDifficulty

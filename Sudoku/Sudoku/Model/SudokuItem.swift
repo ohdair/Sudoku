@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SudokuItem {
+struct SudokuItem: Codable {
     var number: Int = 0
     var memo: [Bool] = Array(repeating: false, count: 9)
 }

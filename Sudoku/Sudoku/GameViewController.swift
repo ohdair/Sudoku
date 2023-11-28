@@ -38,25 +38,17 @@ class GameViewController: UIViewController {
     var cursor: IndexPath?
     var timer: Timer?
     var time = 0
+    var sudoku: Sudoku?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
 
-        // MARK: - API 호출
-        Networking().loadData { result in
-            switch result {
-            case .success(let success):
-                guard let success else { return }
-                let problem = success.problem
-                
-                DispatchQueue.main.async {
-                    self.boardView.updateAll(problem)
-                    self.difficultyView.updateContent(by: .difficulty(content: success.difficulty.discription))
-                }
-            case .failure(let failure):
-                print(failure)
-            }
+        if let sudoku {
+            boardView.updateAll(sudoku.data.problem)
+            difficultyView.updateContent(by: .difficulty(content: sudoku.data.difficulty.discription))
+        } else {
+            requestSudoku()
         }
 
         timer = Timer.startRepeating(self, selector: #selector(runTime))
@@ -134,6 +126,9 @@ class GameViewController: UIViewController {
 
     @objc private func tappedBackBarButton(_ sender: UIBarButtonItem) {
         self.navigationController?.popViewController(animated: true)
+        if let encoded = try? JSONEncoder().encode(sudoku) {
+            UserDefaults.standard.setValue(encoded, forKey: "Sudoku")
+        }
     }
 
     @objc private func tappedPauseBarButton(_ sender: UIBarButtonItem) {
@@ -153,6 +148,23 @@ class GameViewController: UIViewController {
     @objc func runTime() {
         time += 1
         timerView.updateContent(by: .timer(content: time))
+    }
+
+    private func requestSudoku() {
+        Networking().loadData { result in
+            switch result {
+            case .success(let sudokuData):
+                guard let sudokuData else { return }
+                self.sudoku = Sudoku(data: sudokuData)
+
+                DispatchQueue.main.async {
+                    self.boardView.updateAll(sudokuData.problem)
+                    self.difficultyView.updateContent(by: .difficulty(content: sudokuData.difficulty.discription))
+                }
+            case .failure(let failure):
+                print(failure)
+            }
+        }
     }
 }
 

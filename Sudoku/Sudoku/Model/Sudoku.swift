@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Sudoku {
+struct Sudoku: Codable {
     var data: SudokuData
     var time: Int = 0
     var mistake: Int = 0
