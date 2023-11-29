@@ -10,6 +10,16 @@ import UIKit
 class HomeViewController: UIViewController {
     private let newGameButton = GameButton(type: .new)
     private let continueGameButton = GameButton(type: .continue)
+    private var savedGame: Sudoku?
+
+    override func viewWillAppear(_ animated: Bool) {
+        if let savedSudoku = UserDefaults.standard.object(forKey: "Sudoku") as? Data,
+           let loadedSudoku = try? JSONDecoder().decode(Sudoku.self, from: savedSudoku) {
+            savedGame = loadedSudoku
+            continueGameButton.setSubtitle(time: loadedSudoku.time)
+        }
+        continueGameButton.isHidden = savedGame == nil
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +31,7 @@ class HomeViewController: UIViewController {
     private func setUI() {
         view.backgroundColor = .systemBackground
 
-        continueGameButton.setSubtitle(timer: TimeInterval())
+        continueGameButton.addTarget(self, action: #selector(tappedContinueButton), for: .touchDown)
         newGameButton.addTarget(self, action: #selector(tappedNewGameButton), for: .touchDown)
     }
 
@@ -47,9 +57,13 @@ class HomeViewController: UIViewController {
 
     @objc func tappedNewGameButton(_ sender: UIButton) {
         let gameViewController = GameViewController()
-        if let savedSudoku = UserDefaults.standard.object(forKey: "Sudoku") as? Data,
-           let loadedSudoku = try? JSONDecoder().decode(Sudoku.self, from: savedSudoku) {
-            gameViewController.sudoku = loadedSudoku
+        self.navigationController?.pushViewController(gameViewController, animated: true)
+    }
+
+    @objc func tappedContinueButton(_ sender: UIButton) {
+        let gameViewController = GameViewController()
+        if let savedGame {
+            gameViewController.sudoku = savedGame
         }
         self.navigationController?.pushViewController(gameViewController, animated: true)
     }

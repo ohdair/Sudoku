@@ -37,8 +37,7 @@ class GameViewController: UIViewController {
 
     var cursor: IndexPath?
     var timer: Timer?
-    var time = 0
-    var sudoku: Sudoku?
+    var sudoku: Sudoku!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +45,8 @@ class GameViewController: UIViewController {
 
         if let sudoku {
             boardView.updateAll(sudoku.data.problem)
+            mistakeView.updateContent(by: .mistake(content: sudoku.mistake))
+            timerView.updateContent(by: .timer(content: sudoku.time))
             difficultyView.updateContent(by: .difficulty(content: sudoku.data.difficulty.discription))
         } else {
             requestSudoku()
@@ -56,10 +57,6 @@ class GameViewController: UIViewController {
 
         setUI()
         setLayout()
-
-        difficultyView.updateContent(by: .difficulty(content: "쉬움"))
-        mistakeView.updateContent(by: .mistake(content: 0))
-        timerView.updateContent(by: .timer(content: time))
 
         informationStackView.addArrangedSubview(difficultyView)
         informationStackView.addArrangedSubview(mistakeView)
@@ -125,10 +122,10 @@ class GameViewController: UIViewController {
     }
 
     @objc private func tappedBackBarButton(_ sender: UIBarButtonItem) {
-        self.navigationController?.popViewController(animated: true)
         if let encoded = try? JSONEncoder().encode(sudoku) {
             UserDefaults.standard.setValue(encoded, forKey: "Sudoku")
         }
+        self.navigationController?.popViewController(animated: true)
     }
 
     @objc private func tappedPauseBarButton(_ sender: UIBarButtonItem) {
@@ -146,8 +143,8 @@ class GameViewController: UIViewController {
     }
 
     @objc func runTime() {
-        time += 1
-        timerView.updateContent(by: .timer(content: time))
+        sudoku.time += 1
+        timerView.updateContent(by: .timer(content: sudoku.time))
     }
 
     private func requestSudoku() {
@@ -159,6 +156,8 @@ class GameViewController: UIViewController {
 
                 DispatchQueue.main.async {
                     self.boardView.updateAll(sudokuData.problem)
+                    self.mistakeView.updateContent(by: .mistake(content: 0))
+                    self.timerView.updateContent(by: .timer(content: 0))
                     self.difficultyView.updateContent(by: .difficulty(content: sudokuData.difficulty.discription))
                 }
             case .failure(let failure):

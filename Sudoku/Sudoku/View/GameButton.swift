@@ -27,11 +27,12 @@ class GameButton: UIButton {
         configuration = config
     }
 
-    func setSubtitle(timer: TimeInterval) {
+    func setSubtitle(time: Int) {
         let mutableAttributedString = NSMutableAttributedString(string: "")
         let textAttachment = NSTextAttachment(image: UIImage(systemName: "timer")!)
         mutableAttributedString.append(NSAttributedString(attachment: textAttachment))
-        mutableAttributedString.append(NSAttributedString(string: " \(timer.time)"))
+        let timeInterval = TimeInterval(truncating: time as NSNumber)
+        mutableAttributedString.append(NSAttributedString(string: " \(timeInterval.time)"))
 
         configuration?.attributedSubtitle = AttributedString(mutableAttributedString)
     }
