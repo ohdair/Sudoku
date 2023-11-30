@@ -43,17 +43,14 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
 
+        LoadingIndicator.showLoading()
+
         if let sudoku {
-            boardView.updateAll(sudoku.data.problem)
-            mistakeView.updateContent(by: .mistake(content: sudoku.mistake))
-            timerView.updateContent(by: .timer(content: sudoku.time))
-            difficultyView.updateContent(by: .difficulty(content: sudoku.data.difficulty.discription))
+            configure(of: sudoku)
+            LoadingIndicator.hideLoading()
         } else {
             requestSudoku()
         }
-
-        timer = Timer.startRepeating(self, selector: #selector(runTime))
-        timer?.tolerance = 0.1
 
         setUI()
         setLayout()
@@ -151,19 +148,26 @@ class GameViewController: UIViewController {
         Networking().loadData { result in
             switch result {
             case .success(let sudokuData):
-                guard let sudokuData else { return }
-                self.sudoku = Sudoku(data: sudokuData)
+                let sudoku = Sudoku(data: sudokuData)
 
                 DispatchQueue.main.async {
-                    self.boardView.updateAll(sudokuData.problem)
-                    self.mistakeView.updateContent(by: .mistake(content: 0))
-                    self.timerView.updateContent(by: .timer(content: 0))
-                    self.difficultyView.updateContent(by: .difficulty(content: sudokuData.difficulty.discription))
+                    self.sudoku = sudoku
+                    self.configure(of: sudoku)
                 }
             case .failure(let failure):
                 print(failure)
             }
+
+            LoadingIndicator.hideLoading()
         }
+    }
+
+    private func configure(of sudoku: Sudoku) {
+        boardView.updateAll(sudoku.data.problem)
+        mistakeView.updateContent(by: .mistake(content: sudoku.mistake))
+        timerView.updateContent(by: .timer(content: sudoku.time))
+        difficultyView.updateContent(by: .difficulty(content: sudoku.data.difficulty.discription))
+        timer = Timer.startRepeating(self, selector: #selector(runTime))
     }
 }
 

@@ -10,7 +10,7 @@ import Foundation
 struct SudokuDataDTO: Decodable {
     let newboard: SudokuBoardDTO
 
-    func fetch() -> SudokuData? {
-        return newboard.data.first
+    func fetch() -> SudokuData {
+        return newboard.data.first!
     }
 }

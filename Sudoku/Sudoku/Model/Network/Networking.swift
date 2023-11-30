@@ -10,7 +10,7 @@ import Foundation
 struct Networking {
     private let endpoint = "https://sudoku-api.vercel.app/api/dosuku"
 
-    func loadData(complition: @escaping (Result<SudokuData?, NetworkError>) -> Void) {
+    func loadData(complition: @escaping (Result<SudokuData, NetworkError>) -> Void) {
         guard let url = URL(string: endpoint) else {
             complition(.failure(.invalidURL))
             return
