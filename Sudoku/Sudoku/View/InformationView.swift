@@ -61,15 +61,8 @@ class InformationView: UIView {
         case .mistake(let content):
             contentLabel.text = "\(content) / 3"
         case .timer(let content):
-            contentLabel.text = updateTime(content)
+            contentLabel.text = content.time
         }
-    }
-
-    private func updateTime(_ time: Int) -> String {
-        let minutes = time / 60
-        let seconds = time % 60
-
-        return String(format: "%02d:%02d", minutes, seconds)
     }
 }
 
@@ -77,7 +70,7 @@ extension InformationView {
     enum Information {
         case difficulty(content: String)
         case mistake(content: Int)
-        case timer(content: Int)
+        case timer(content: TimeInterval)
 
         fileprivate var title: String {
             switch self {
