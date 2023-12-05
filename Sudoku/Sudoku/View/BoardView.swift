@@ -110,11 +110,13 @@ extension BoardView: IndexPathable {
             .filter { button.number != nil && $0.indexPath != button.indexPath && $0.number == button.number }
     }
 
-    func updateAll(_ board: [[Int]]) {
-        conform(board) { (indexPath, number) in
+    func updateAll(_ board: [[SudokuItem]]) {
+        conform(board) { (indexPath, item) in
             let cellButton = cellButton(item: indexPath.item, section: indexPath.section)
-            if number != 0 {
-                cellButton.number(to: number)
+            if item.number != 0 {
+                cellButton.number(to: item.number)
+            } else {
+                cellButton.memo(to: item.memo)
             }
         }
     }

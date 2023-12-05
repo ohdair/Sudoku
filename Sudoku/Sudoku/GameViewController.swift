@@ -144,7 +144,7 @@ class GameViewController: UIViewController {
     }
 
     private func configure(of sudoku: Sudoku) {
-        boardView.updateAll(sudoku.data.problem)
+        boardView.updateAll(sudoku.board)
         informationStackView.configure(.mistake(content: sudoku.mistake))
         informationStackView.configure(.timer(content: sudoku.time))
         informationStackView.configure(.difficulty(content: sudoku.data.difficulty.discription))

@@ -9,7 +9,7 @@ import Foundation
 
 protocol IndexPathable {
     func indexPath(row: Int, column: Int) -> IndexPath
-    func conform(_ matrix: [[Int]], complition: (IndexPath, Int) -> Void)
+    func conform(_ matrix: [[SudokuItem]], complition: (IndexPath, SudokuItem) -> Void)
 }
 
 extension IndexPathable {
@@ -19,7 +19,7 @@ extension IndexPathable {
         return IndexPath(item: item, section: section)
     }
 
-    func conform(_ matrix: [[Int]], complition: (IndexPath, Int) -> Void) {
+    func conform(_ matrix: [[SudokuItem]], complition: (IndexPath, SudokuItem) -> Void) {
         matrix.enumerated().forEach { (i, row) in
             row.enumerated().forEach { (j, element) in
                 complition(indexPath(row: i, column: j), element)
