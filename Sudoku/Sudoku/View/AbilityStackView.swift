@@ -22,16 +22,16 @@ class AbilityStackView: UIStackView {
         AbilityButton.Ability.allCases.forEach { ability in
             let abilityButton = AbilityButton(of: ability)
             addArrangedSubview(abilityButton)
-
-            if ability == .memo {
-                abilityButton.addTarget(self, action: #selector(tappedMemoButton), for: .touchDown)
-            }
         }
 
         distribution = .equalCentering
     }
 
-    @objc private func tappedMemoButton(_ sender: AbilityButton) {
-        sender.toggleMemo()
+    func addTargetMemoButton(_ target: AnyObject?, selector: Selector) {
+        subviews.filter { view in
+            (view as! AbilityButton).type == .memo
+        }.forEach { view in
+            (view as! AbilityButton).addTarget(target, action: selector, for: .touchDown)
+        }
     }
 }

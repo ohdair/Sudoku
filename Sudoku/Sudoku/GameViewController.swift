@@ -49,6 +49,8 @@ class GameViewController: UIViewController {
                                               .foregroundColor: UIColor.darkMainColor2]
         self.navigationItem.leftBarButtonItem = backBarButtonItem
         self.navigationItem.rightBarButtonItem = pauseBarButtonItem
+        numberStackView.addTargetNumberButtons(self, selector: #selector(tappedNumberButton))
+        abilityStackView.addTargetMemoButton(self, selector: #selector(tappedMemoButton))
     }
 
     private func setLayout() {
@@ -99,9 +101,28 @@ class GameViewController: UIViewController {
         }
     }
 
-    @objc func runTime() {
+    @objc private func runTime() {
         sudoku.time += 1
         informationStackView.configure(.timer(content: sudoku.time))
+    }
+
+    @objc private func tappedNumberButton(_ sender: NumberButton) {
+        guard let cursor else {
+            return
+        }
+
+        sudoku.update(number: sender.number, indexPath: cursor)
+        let sudokuItem = sudoku.item(indexPath: cursor)
+        if sudoku.isOnMemo {
+            boardView.updateMemo(sudokuItem.memo, indexPath: cursor)
+        } else {
+            boardView.updateNumber(sudokuItem.number, indexPath: cursor)
+        }
+    }
+
+    @objc private func tappedMemoButton(_ sender: AbilityButton) {
+        sender.toggleMemo()
+        sudoku.isOnMemo = sender.isOnMemo
     }
 
     private func requestSudoku() {

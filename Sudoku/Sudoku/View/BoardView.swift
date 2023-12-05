@@ -119,6 +119,16 @@ extension BoardView: IndexPathable {
         }
     }
 
+    func updateMemo(_ memo: [Bool], indexPath: IndexPath) {
+        let button = cellButton(item: indexPath.item, section: indexPath.section)
+        button.memo(to: memo)
+    }
+
+    func updateNumber(_ number: Int, indexPath: IndexPath) {
+        let button = cellButton(item: indexPath.item, section: indexPath.section)
+        button.number(to: number)
+    }
+
     private func cellButton(item: Int, section: Int) -> CellButton {
         return sections[section].buttons[item]
     }

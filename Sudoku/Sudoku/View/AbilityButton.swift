@@ -38,7 +38,7 @@ class AbilityButton: UIButton {
         return label
     }()
 
-    private let type: Ability
+    let type: Ability
     private(set) var isOnMemo = false
 
     init(of type: Ability) {

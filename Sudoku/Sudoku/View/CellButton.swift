@@ -107,12 +107,14 @@ extension CellButton {
         }
     }
 
-    func memo(to number: Int) {
+    func memo(to memo: [Bool]) {
         if self.number != nil {
             self.number = nil
         }
 
-        memoLabels[number - 1].isHidden.toggle()
+        zip(memoLabels, memo).forEach { label, flag in
+            label.isHidden = flag
+        }
     }
 
     func paintedBackground(according state: State) {

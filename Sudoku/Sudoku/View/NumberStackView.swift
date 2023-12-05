@@ -25,4 +25,10 @@ class NumberStackView: UIStackView {
 
         distribution = .equalCentering
     }
+
+    func addTargetNumberButtons(_ target: AnyObject?, selector: Selector) {
+        subviews.forEach { view in
+            (view as! NumberButton).addTarget(target, action: selector, for: .touchDown)
+        }
+    }
 }
