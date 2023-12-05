@@ -11,29 +11,10 @@ class GameViewController: UIViewController {
     private lazy var backBarButtonItem = UIBarButtonItem.back(self, selector: #selector(tappedBackBarButton))
     private lazy var pauseBarButtonItem = UIBarButtonItem.pause(self, selector: #selector(tappedPauseBarButton))
 
-    private let informationStackView = {
-        let stackView = UIStackView()
-        stackView.distribution = .fillEqually
-        return stackView
-    }()
-
+    private let informationStackView = InformationStackView()
     private let boardView = BoardView()
-
-    private let abilityStackView = {
-        let stackView = UIStackView()
-        stackView.distribution = .equalCentering
-        return stackView
-    }()
-
-    private let numberStackView = {
-        let stackView = UIStackView()
-        stackView.distribution = .equalCentering
-        return stackView
-    }()
-
-    private let difficultyView = InformationView()
-    private let mistakeView = InformationView()
-    private let timerView = InformationView()
+    private let abilityStackView = AbilityStackView()
+    private let numberStackView = NumberStackView()
 
     var cursor: IndexPath?
     var timer: Timer?
@@ -55,26 +36,9 @@ class GameViewController: UIViewController {
         setUI()
         setLayout()
 
-        informationStackView.addArrangedSubview(difficultyView)
-        informationStackView.addArrangedSubview(mistakeView)
-        informationStackView.addArrangedSubview(timerView)
-
         // MARK: - Board Test
         boardView.sections.forEach { sectionView in
             sectionView.delegate = self
-        }
-
-        AbilityButton.Ability.allCases.forEach { ability in
-            let abilityButton = AbilityButton(of: ability)
-            abilityStackView.addArrangedSubview(abilityButton)
-
-            if ability == .memo {
-                abilityButton.addTarget(self, action: #selector(tappedMemoButton), for: .touchDown)
-            }
-        }
-
-        stride(from: 1, through: 9, by: 1).forEach { number in
-            numberStackView.addArrangedSubview(NumberButton(number: number))
         }
     }
 
@@ -135,13 +99,9 @@ class GameViewController: UIViewController {
         }
     }
 
-    @objc private func tappedMemoButton(_ sender: AbilityButton) {
-        sender.toggleMemo()
-    }
-
     @objc func runTime() {
         sudoku.time += 1
-        timerView.updateContent(by: .timer(content: sudoku.time))
+        informationStackView.configure(.timer(content: sudoku.time))
     }
 
     private func requestSudoku() {
@@ -164,9 +124,9 @@ class GameViewController: UIViewController {
 
     private func configure(of sudoku: Sudoku) {
         boardView.updateAll(sudoku.data.problem)
-        mistakeView.updateContent(by: .mistake(content: sudoku.mistake))
-        timerView.updateContent(by: .timer(content: sudoku.time))
-        difficultyView.updateContent(by: .difficulty(content: sudoku.data.difficulty.discription))
+        informationStackView.configure(.mistake(content: sudoku.mistake))
+        informationStackView.configure(.timer(content: sudoku.time))
+        informationStackView.configure(.difficulty(content: sudoku.data.difficulty.discription))
         timer = Timer.startRepeating(self, selector: #selector(runTime))
     }
 }
