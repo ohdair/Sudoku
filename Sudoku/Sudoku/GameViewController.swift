@@ -36,7 +36,6 @@ class GameViewController: UIViewController {
         setUI()
         setLayout()
 
-        // MARK: - Board Test
         boardView.sections.forEach { sectionView in
             sectionView.delegate = self
         }
@@ -50,7 +49,10 @@ class GameViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = backBarButtonItem
         self.navigationItem.rightBarButtonItem = pauseBarButtonItem
         numberStackView.addTargetNumberButtons(self, selector: #selector(tappedNumberButton))
-        abilityStackView.addTargetMemoButton(self, selector: #selector(tappedMemoButton))
+        abilityStackView.addTarget(self, selector: #selector(tappedMemoButton), ability: .memo)
+        abilityStackView.addTarget(self, selector: #selector(tappedUndoButton), ability: .undo)
+        abilityStackView.addTarget(self, selector: #selector(tappedEraseButton), ability: .erase)
+
     }
 
     private func setLayout() {
@@ -113,6 +115,7 @@ class GameViewController: UIViewController {
         }
 
         sudoku.update(number: sender.number, indexPath: cursor)
+        sudoku.history.append(sudoku.board)
         let sudokuItem = sudoku.item(of: cursor)
         let cellButton = boardView.cellButton(of: cursor)
         cellButton.update(to: sudokuItem)
@@ -120,6 +123,41 @@ class GameViewController: UIViewController {
         if !sudoku.isOnMemo {
             paint(associated: cursor)
         }
+    }
+
+    @objc private func tappedUndoButton(_ sender: AbilityButton) {
+        guard sudoku.history.count > 1,
+              let currentBoard = sudoku.history.popLast(),
+              let previousBoard = sudoku.history.last
+        else { return }
+
+        zip(currentBoard, previousBoard)
+            .compactMapMatrix { currentItem, previousItem in
+                currentItem == previousItem ? nil : previousItem
+            }
+            .forEachMatrix { row, column, sudokuItem in
+                if let sudokuItem {
+                    let indexPath = sudoku.indexPath(row: row, column: column)
+                    let cellButton = boardView.cellButton(of: indexPath)
+                    sudoku.update(item: sudokuItem, indexPath: indexPath)
+                    DispatchQueue.main.async {
+                        cellButton.update(to: sudokuItem)
+                        self.paint(associated: indexPath)
+                    }
+                }
+            }
+
+    }
+
+    @objc private func tappedEraseButton(_ sender: AbilityButton) {
+        guard let cursor else { return }
+        sudoku.erase(indexPath: cursor)
+        sudoku.history.append(sudoku.board)
+
+        let sudokuItem = sudoku.item(of: cursor)
+        let cellButton = boardView.cellButton(of: cursor)
+        cellButton.update(to: sudokuItem)
+        paint(associated: cursor)
     }
 
     @objc private func tappedMemoButton(_ sender: AbilityButton) {

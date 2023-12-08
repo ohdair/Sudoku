@@ -21,6 +21,7 @@ struct Sudoku: Codable {
         self.board = data.problem.map { row in
             row.map { SudokuItem(number: $0) }
         }
+        self.history.append(self.board)
     }
 
     mutating func setCursor(to indexPath: IndexPath) {
@@ -36,6 +37,20 @@ struct Sudoku: Codable {
         } else {
             board[row][column].updateNumber(to: number)
         }
+    }
+
+    mutating func update(item: SudokuItem, indexPath: IndexPath) {
+        let row = indexPath.row()
+        let column =  indexPath.column()
+
+        board[row][column] = item
+    }
+
+    mutating func erase(indexPath: IndexPath) {
+        let row = indexPath.row()
+        let column =  indexPath.column()
+
+        board[row][column] = SudokuItem()
     }
 
     func item(of indexPath: IndexPath) -> SudokuItem {

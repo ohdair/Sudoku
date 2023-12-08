@@ -27,9 +27,9 @@ class AbilityStackView: UIStackView {
         distribution = .equalCentering
     }
 
-    func addTargetMemoButton(_ target: AnyObject?, selector: Selector) {
+    func addTarget(_ target: AnyObject?, selector: Selector, ability: AbilityButton.Ability) {
         subviews.filter { view in
-            (view as! AbilityButton).type == .memo
+            (view as! AbilityButton).type == ability
         }.forEach { view in
             (view as! AbilityButton).addTarget(target, action: selector, for: .touchDown)
         }
