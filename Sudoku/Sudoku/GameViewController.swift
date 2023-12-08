@@ -85,6 +85,7 @@ class GameViewController: UIViewController {
     }
 
     @objc private func tappedBackBarButton(_ sender: UIBarButtonItem) {
+        sudoku.isOnMemo = false
         if let encoded = try? JSONEncoder().encode(sudoku) {
             UserDefaults.standard.setValue(encoded, forKey: "Sudoku")
         }
@@ -113,10 +114,10 @@ class GameViewController: UIViewController {
 
         sudoku.update(number: sender.number, indexPath: cursor)
         let sudokuItem = sudoku.item(of: cursor)
-        if sudoku.isOnMemo {
-            boardView.updateMemo(sudokuItem.memo, indexPath: cursor)
-        } else {
-            boardView.updateNumber(sudokuItem.number, indexPath: cursor)
+        let cellButton = boardView.cellButton(of: cursor)
+        cellButton.update(to: sudokuItem)
+
+        if !sudoku.isOnMemo {
             paint(associated: cursor)
         }
     }
@@ -145,7 +146,9 @@ class GameViewController: UIViewController {
     }
 
     private func configure(of sudoku: Sudoku) {
-        boardView.updateAll(sudoku.board)
+        boardView.updateAll(sudoku.board) { indexPath in
+            paintText(associated: indexPath)
+        }
         informationStackView.configure(.mistake(content: sudoku.mistake))
         informationStackView.configure(.timer(content: sudoku.time))
         informationStackView.configure(.difficulty(content: sudoku.data.difficulty.discription))

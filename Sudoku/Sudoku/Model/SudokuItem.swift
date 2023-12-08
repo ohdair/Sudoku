@@ -12,10 +12,12 @@ struct SudokuItem: Codable {
     private(set) var memo: [Bool] = Array(repeating: true, count: 9)
 
     mutating func updateMemo(to number: Int) {
+        self.number = 0
         memo[number - 1].toggle()
     }
 
     mutating func updateNumber(to number: Int) {
+        self.memo = Array(repeating: true, count: 9)
         self.number = number
     }
 }

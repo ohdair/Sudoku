@@ -28,7 +28,14 @@ struct Sudoku: Codable {
     }
 
     mutating func update(number: Int, indexPath: IndexPath) {
-        isOnMemo ? updateMemo(number, indexPath: indexPath) : updateNumber(number, indexPath: indexPath)
+        let row = indexPath.row()
+        let column =  indexPath.column()
+
+        if isOnMemo {
+            board[row][column].updateMemo(to: number)
+        } else {
+            board[row][column].updateNumber(to: number)
+        }
     }
 
     func item(of indexPath: IndexPath) -> SudokuItem {
@@ -36,20 +43,6 @@ struct Sudoku: Codable {
         let column =  indexPath.column()
 
         return board[row][column]
-    }
-
-    private mutating func updateMemo(_ number: Int, indexPath: IndexPath) {
-        let row = indexPath.row()
-        let column =  indexPath.column()
-
-        board[row][column].updateMemo(to: number)
-    }
-
-    private mutating func updateNumber(_ number: Int, indexPath: IndexPath) {
-        let row = indexPath.row()
-        let column =  indexPath.column()
-
-        board[row][column].updateNumber(to: number)
     }
 
     func isMistake(indexPath: IndexPath) -> Bool {

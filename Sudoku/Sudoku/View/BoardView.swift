@@ -71,25 +71,12 @@ extension BoardView: IndexPathable {
             .forEach { $0.paintedBackground(according: .problem) }
     }
 
-    func updateAll(_ board: [[SudokuItem]]) {
+    func updateAll(_ board: [[SudokuItem]], colorChanger: (IndexPath) -> Void) {
         conform(board) { (indexPath, item) in
             let cellButton = cellButton(of: indexPath)
-            if item.number != 0 {
-                cellButton.number(to: item.number)
-            } else {
-                cellButton.memo(to: item.memo)
-            }
+            cellButton.update(to: item)
+            colorChanger(indexPath)
         }
-    }
-
-    func updateMemo(_ memo: [Bool], indexPath: IndexPath) {
-        let button = cellButton(of: indexPath)
-        button.memo(to: memo)
-    }
-
-    func updateNumber(_ number: Int, indexPath: IndexPath) {
-        let button = cellButton(of: indexPath)
-        button.number(to: number)
     }
 
     func cellButton(of indexPath: IndexPath) -> CellButton {

@@ -16,7 +16,7 @@ class CellButton: UIButton {
         return label
     }()
     private var memoLabels = [UILabel]()
-    private(set) var number: Int? {
+    private(set) var number: Int = 0 {
         didSet {
             numberLabel.text = convert(of: number)
         }
@@ -79,40 +79,20 @@ class CellButton: UIButton {
         }
     }
 
-    private func convert(of number: Int?) -> String {
-        guard let number else {
-            return ""
+    private func convert(of number: Int) -> String {
+        guard number == 0 else {
+            return number.description
         }
 
-        return number.description
+        return ""
     }
 }
 
 extension CellButton {
-    func number(to number: Int) {
-        resetMemo()
+    func update(to item: SudokuItem) {
+        number = item.number
 
-        self.number = number
-    }
-
-    func reset() {
-        number = nil
-
-        resetMemo()
-    }
-
-    func resetMemo() {
-        memoLabels.forEach {
-            $0.isHidden = true
-        }
-    }
-
-    func memo(to memo: [Bool]) {
-        if self.number != nil {
-            self.number = nil
-        }
-
-        zip(memoLabels, memo).forEach { label, flag in
+        zip(memoLabels, item.memo).forEach { label, flag in
             label.isHidden = flag
         }
     }
