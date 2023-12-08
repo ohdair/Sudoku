@@ -112,11 +112,12 @@ class GameViewController: UIViewController {
         }
 
         sudoku.update(number: sender.number, indexPath: cursor)
-        let sudokuItem = sudoku.item(indexPath: cursor)
+        let sudokuItem = sudoku.item(of: cursor)
         if sudoku.isOnMemo {
             boardView.updateMemo(sudokuItem.memo, indexPath: cursor)
         } else {
             boardView.updateNumber(sudokuItem.number, indexPath: cursor)
+            paint(associated: cursor)
         }
     }
 
@@ -150,12 +151,41 @@ class GameViewController: UIViewController {
         informationStackView.configure(.difficulty(content: sudoku.data.difficulty.discription))
         timer = Timer.startRepeating(self, selector: #selector(runTime))
     }
+
+    private func paint(associated indexPath: IndexPath) {
+        let associatedIndexPaths = sudoku.associatedIndexPaths(indexPath: indexPath)
+        let associatedNumbers = sudoku.associatedNumbers(indexPath: indexPath)
+        boardView.paintedReset()
+        boardView.paint(to: associatedIndexPaths, into: .associatedCursor)
+        boardView.paint(to: indexPath, into: .selected)
+        boardView.paint(to: associatedNumbers, into: .associatedNumber)
+
+        if sudoku.isMistake(indexPath: indexPath) {
+            let associatedMistake = sudoku.mistake(indexPath: indexPath)
+            boardView.paint(to: associatedMistake, into: .mistake)
+        }
+
+        paintText(associated: indexPath)
+    }
+
+    private func paintText(associated indexPath: IndexPath) {
+        guard !sudoku.isProblem(indexPath: indexPath) else {
+            boardView.paintText(to: indexPath, into: .problem)
+            return
+        }
+
+        if sudoku.isMistake(indexPath: indexPath) {
+            boardView.paintText(to: indexPath, into: .mistake)
+        } else {
+            boardView.paintText(to: indexPath, into: .selected)
+        }
+    }
 }
 
 extension GameViewController: SectionViewDelegate {
     func cellButtonTapped(_ button: CellButton) {
         cursor = button.indexPath
 
-        boardView.paint(associated: button)
+        paint(associated: button.indexPath)
     }
 }

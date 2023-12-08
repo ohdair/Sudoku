@@ -35,6 +35,7 @@
 		F68998A12B1ED248009AB0D2 /* AbilityStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68998A02B1ED248009AB0D2 /* AbilityStackView.swift */; };
 		F68998A32B1ED93E009AB0D2 /* NumberStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68998A22B1ED93E009AB0D2 /* NumberStackView.swift */; };
 		F68998A72B1EFC45009AB0D2 /* IndexPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68998A62B1EFC45009AB0D2 /* IndexPath.swift */; };
+		F6AE1B5C2B204C6E00AD4CC5 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AE1B5B2B204C6E00AD4CC5 /* Array.swift */; };
 		F6EF981F2B15C520005FEA99 /* Sudoku.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EF981E2B15C520005FEA99 /* Sudoku.swift */; };
 		F6EF98222B15C844005FEA99 /* SudokuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EF98212B15C844005FEA99 /* SudokuItem.swift */; };
 		F6EF98282B15F5CD005FEA99 /* IndexPathable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EF98272B15F5CD005FEA99 /* IndexPathable.swift */; };
@@ -71,6 +72,7 @@
 		F68998A02B1ED248009AB0D2 /* AbilityStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbilityStackView.swift; sourceTree = "<group>"; };
 		F68998A22B1ED93E009AB0D2 /* NumberStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberStackView.swift; sourceTree = "<group>"; };
 		F68998A62B1EFC45009AB0D2 /* IndexPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexPath.swift; sourceTree = "<group>"; };
+		F6AE1B5B2B204C6E00AD4CC5 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		F6EF981E2B15C520005FEA99 /* Sudoku.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sudoku.swift; sourceTree = "<group>"; };
 		F6EF98212B15C844005FEA99 /* SudokuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuItem.swift; sourceTree = "<group>"; };
 		F6EF98272B15F5CD005FEA99 /* IndexPathable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexPathable.swift; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 		F60BB9572B0321C4005137FE /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				F6AE1B5B2B204C6E00AD4CC5 /* Array.swift */,
 				F60BB9582B0321D6005137FE /* TimeInterval.swift */,
 				F60B9D6D2B0AF5F70036AA1B /* UIColor.swift */,
 				F60B9D712B0BA0520036AA1B /* UIBarButtonItem.swift */,
@@ -271,6 +274,7 @@
 				F6EF98282B15F5CD005FEA99 /* IndexPathable.swift in Sources */,
 				F60B9D822B0DD2B00036AA1B /* SudokuData.swift in Sources */,
 				F60B9D802B0DD2800036AA1B /* SudokuBoardDTO.swift in Sources */,
+				F6AE1B5C2B204C6E00AD4CC5 /* Array.swift in Sources */,
 				F60B9D722B0BA0520036AA1B /* UIBarButtonItem.swift in Sources */,
 				F63272612B1429DB00F16FA8 /* SectionView.swift in Sources */,
 				F681E8C52B182EE600DC34A3 /* LoadingIndicator.swift in Sources */,

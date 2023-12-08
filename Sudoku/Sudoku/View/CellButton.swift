@@ -125,7 +125,7 @@ extension CellButton {
             backgroundColor = .brightMainColor2
         case .mistake:
             backgroundColor = .systemRed.withAlphaComponent(0.3)
-        case .normal:
+        default:
             backgroundColor = nil
         }
     }
@@ -134,6 +134,8 @@ extension CellButton {
         switch state {
         case .mistake:
             numberLabel.textColor = .red
+        case .problem:
+            numberLabel.textColor = .black
         default:
             numberLabel.textColor = .darkMainColor1
         }
@@ -146,6 +148,6 @@ extension CellButton {
         case associatedCursor
         case selected
         case mistake
-        case normal
+        case problem
     }
 }

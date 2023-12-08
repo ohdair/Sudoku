@@ -31,7 +31,7 @@ struct Sudoku: Codable {
         isOnMemo ? updateMemo(number, indexPath: indexPath) : updateNumber(number, indexPath: indexPath)
     }
 
-    func item(indexPath: IndexPath) -> SudokuItem {
+    func item(of indexPath: IndexPath) -> SudokuItem {
         let row = indexPath.row()
         let column =  indexPath.column()
 
@@ -50,5 +50,66 @@ struct Sudoku: Codable {
         let column =  indexPath.column()
 
         board[row][column].updateNumber(to: number)
+    }
+
+    func isMistake(indexPath: IndexPath) -> Bool {
+        return !mistake(indexPath: indexPath).isEmpty
+    }
+
+    func isProblem(indexPath: IndexPath) -> Bool {
+        let row = indexPath.row()
+        let column =  indexPath.column()
+
+        return data.problem[row][column] != 0
+    }
+}
+
+extension Sudoku: IndexPathable {
+    func mistake(indexPath: IndexPath) -> [IndexPath] {
+        let number = item(of: indexPath).number
+
+        return associatedIndexPaths(indexPath: indexPath)
+            .filter { number != 0 && item(of: $0).number == number }
+    }
+
+    func associatedNumbers(indexPath: IndexPath) -> [IndexPath] {
+        let number = item(of: indexPath).number
+        guard number != 0 else { return [] }
+
+        return board
+            .compactMapMatrix { row, column, element in
+                number == element.number ? self.indexPath(row: row, column: column) : nil
+            }
+            .flatMap { $0 }
+    }
+
+    func associatedIndexPaths(indexPath: IndexPath) -> [IndexPath] {
+        let row = associatedRow(indexPath: indexPath)
+        let column = associatedColumn(indexPath: indexPath)
+        let section = associatedSection(indexPath: indexPath)
+
+        return row + column + section
+    }
+
+    private func associatedRow(indexPath: IndexPath) -> [IndexPath] {
+        let row = indexPath.row()
+
+        return stride(from: 0, to: 9, by: 1)
+            .map { self.indexPath(row: row, column: $0) }
+            .filter { $0 != indexPath }
+    }
+
+    private func associatedColumn(indexPath: IndexPath) -> [IndexPath] {
+        let column = indexPath.column()
+
+        return stride(from: 0, to: 9, by: 1)
+            .map { self.indexPath(row: $0, column: column) }
+            .filter { $0 != indexPath }
+    }
+
+    private func associatedSection(indexPath: IndexPath) -> [IndexPath] {
+        return stride(from: 0, to: 9, by: 1)
+            .map { IndexPath(item: $0, section: indexPath.section) }
+            .filter { $0 != indexPath }
     }
 }

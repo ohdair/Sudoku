@@ -50,69 +50,30 @@ class BoardView: UIView {
 }
 
 extension BoardView: IndexPathable {
-    func paint(associated button: CellButton) {
-        paintedReset()
+    func paint(to indexPath: IndexPath, into state: CellButton.State) {
+        cellButton(of: indexPath).paintedBackground(according: state)
+    }
 
-        let buttonsAssociatedCursor = buttons(associated: button)
-        buttonsAssociatedCursor.forEach { $0.paintedBackground(according: .associatedCursor) }
+    func paint(to indexPaths: [IndexPath], into state: CellButton.State) {
+        indexPaths
+            .forEach {
+                cellButton(of: $0).paintedBackground(according: state)
+            }
+    }
 
-        let numbers = numbers(associated: button)
-        numbers.forEach { $0.paintedBackground(according: .associatedNumber) }
-
-        let mistakeButtons = buttonsAssociatedCursor.filter { button.number != nil && $0.number == button.number }
-        mistakeButtons.forEach { $0.paintedBackground(according: .mistake) }
-
-        if !mistakeButtons.isEmpty {
-            button.paintedTextColor(according: .mistake)
-        }
-
-        button.paintedBackground(according: .selected)
+    func paintText(to indexPath: IndexPath, into state: CellButton.State) {
+        cellButton(of: indexPath).paintedTextColor(according: state)
     }
 
     func paintedReset() {
         sections
             .flatMap { $0.buttons }
-            .forEach { $0.paintedBackground(according: .normal) }
-    }
-
-    private func buttons(associated button: CellButton) -> [CellButton] {
-        let row = row(associated: button.indexPath)
-        let column = column(associated: button.indexPath)
-        let section = section(associated: button.indexPath)
-        return row + column + section
-    }
-
-    private func row(associated indexPath: IndexPath) -> [CellButton] {
-        let sectionViews = sections.filter { $0.section / 3 == indexPath.section / 3 }
-
-        return sectionViews
-            .flatMap {$0.buttons }
-            .filter { $0.indexPath != indexPath && $0.indexPath.item / 3 == indexPath.item / 3 }
-    }
-
-    private func column(associated indexPath: IndexPath) -> [CellButton] {
-        let sectionViews = sections.filter { $0.section % 3 == indexPath.section % 3 }
-
-        return sectionViews
-            .flatMap { $0.buttons }
-            .filter { $0.indexPath != indexPath && $0.indexPath.item % 3 == indexPath.item % 3 }
-    }
-
-    private func section(associated indexPath: IndexPath) -> [CellButton] {
-        let buttons = sections[indexPath.section].buttons
-
-        return buttons.filter { $0.indexPath != indexPath }
-    }
-
-    private func numbers(associated button: CellButton) -> [CellButton] {
-        return sections
-            .flatMap { $0.buttons }
-            .filter { button.number != nil && $0.indexPath != button.indexPath && $0.number == button.number }
+            .forEach { $0.paintedBackground(according: .problem) }
     }
 
     func updateAll(_ board: [[SudokuItem]]) {
         conform(board) { (indexPath, item) in
-            let cellButton = cellButton(item: indexPath.item, section: indexPath.section)
+            let cellButton = cellButton(of: indexPath)
             if item.number != 0 {
                 cellButton.number(to: item.number)
             } else {
@@ -122,16 +83,16 @@ extension BoardView: IndexPathable {
     }
 
     func updateMemo(_ memo: [Bool], indexPath: IndexPath) {
-        let button = cellButton(item: indexPath.item, section: indexPath.section)
+        let button = cellButton(of: indexPath)
         button.memo(to: memo)
     }
 
     func updateNumber(_ number: Int, indexPath: IndexPath) {
-        let button = cellButton(item: indexPath.item, section: indexPath.section)
+        let button = cellButton(of: indexPath)
         button.number(to: number)
     }
 
-    private func cellButton(item: Int, section: Int) -> CellButton {
-        return sections[section].buttons[item]
+    func cellButton(of indexPath: IndexPath) -> CellButton {
+        return sections[indexPath.section].buttons[indexPath.row]
     }
 }
