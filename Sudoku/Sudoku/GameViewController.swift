@@ -123,6 +123,10 @@ class GameViewController: UIViewController {
         if !sudoku.isOnMemo {
             paint(associated: cursor)
         }
+
+        if sudoku.isMistake(indexPath: cursor) {
+            increaseMistake()
+        }
     }
 
     @objc private func tappedUndoButton(_ sender: AbilityButton) {
@@ -220,6 +224,11 @@ class GameViewController: UIViewController {
         } else {
             boardView.paintText(to: indexPath, into: .selected)
         }
+    }
+
+    private func increaseMistake() {
+        sudoku.increaseMistake()
+        informationStackView.configure(.mistake(content: sudoku.mistake))
     }
 }
 

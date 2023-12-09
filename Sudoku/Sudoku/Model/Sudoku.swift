@@ -10,7 +10,7 @@ import Foundation
 struct Sudoku: Codable {
     var data: SudokuData
     var time: TimeInterval = 0
-    var mistake: Int = 0
+    private(set) var mistake: Int = 0
     private(set) var board: [[SudokuItem]]
     var history: [[[SudokuItem]]] = []
     private(set) var cursor: IndexPath?
@@ -69,6 +69,12 @@ struct Sudoku: Codable {
         let column =  indexPath.column()
 
         return data.problem[row][column] != 0
+    }
+
+    mutating func increaseMistake() {
+        guard mistake < 3 else { return }
+
+        mistake += 1
     }
 }
 
