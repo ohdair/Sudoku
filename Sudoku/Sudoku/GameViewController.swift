@@ -24,6 +24,12 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
 
+        setUI()
+        setLayout()
+        configureSudoku()
+    }
+
+    private func configureSudoku() {
         LoadingIndicator.showLoading()
 
         if let sudoku {
@@ -31,13 +37,6 @@ class GameViewController: UIViewController {
             LoadingIndicator.hideLoading()
         } else {
             requestSudoku()
-        }
-
-        setUI()
-        setLayout()
-
-        boardView.sections.forEach { sectionView in
-            sectionView.delegate = self
         }
     }
 
@@ -48,11 +47,14 @@ class GameViewController: UIViewController {
                                               .foregroundColor: UIColor.darkMainColor2]
         self.navigationItem.leftBarButtonItem = backBarButtonItem
         self.navigationItem.rightBarButtonItem = pauseBarButtonItem
+
         numberStackView.addTargetNumberButtons(self, selector: #selector(tappedNumberButton))
         abilityStackView.addTarget(self, selector: #selector(tappedMemoButton), ability: .memo)
         abilityStackView.addTarget(self, selector: #selector(tappedUndoButton), ability: .undo)
         abilityStackView.addTarget(self, selector: #selector(tappedEraseButton), ability: .erase)
-
+        boardView.sections.forEach { sectionView in
+            sectionView.delegate = self
+        }
     }
 
     private func setLayout() {
