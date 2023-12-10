@@ -8,23 +8,27 @@
 import UIKit
 
 class GameButton: UIButton {
-    convenience init(type: ButtonType) {
-        self.init()
-
+    private var configure: UIButton.Configuration = {
         var config = UIButton.Configuration.filled()
-
-        var titleAttribute = AttributedString.init(type.title)
-        titleAttribute.font = .systemFont(ofSize: 28, weight: .heavy)
-
-        config.attributedTitle = titleAttribute
-        config.baseForegroundColor = type.foregroundColor
-        config.baseBackgroundColor = type.backgroundColor
         config.titleAlignment = .center
         config.cornerStyle = .capsule
-        config.background.strokeColor = type.borderColor
         config.background.strokeWidth = 1.0
+        return config
+    }()
 
-        configuration = config
+    convenience init(title: String, reveralColor: Bool = false) {
+        self.init()
+
+        configuration = configure
+        setTitle(title)
+        setColor(reversal: reveralColor)
+    }
+
+    func setTitle(_ title: String) {
+        var attributedString = AttributedString.init(title)
+        attributedString.font = .systemFont(ofSize: 28, weight: .heavy)
+
+        configuration?.attributedTitle = attributedString
     }
 
     func setSubtitle(time: TimeInterval) {
@@ -35,47 +39,16 @@ class GameButton: UIButton {
 
         configuration?.attributedSubtitle = AttributedString(mutableAttributedString)
     }
-}
 
-extension GameButton {
-    enum ButtonType {
-        case new
-        case `continue`
-
-        var backgroundColor: UIColor {
-            switch self {
-            case .new:
-                return .systemBackground
-            case .continue:
-                return .mainBlue
-            }
-        }
-
-        var title: String {
-            switch self {
-            case .new:
-                return "New"
-            case .continue:
-                return "Continue"
-            }
-        }
-
-        var foregroundColor: UIColor {
-            switch self {
-            case .new:
-                return .mainBlue
-            case .continue:
-                return .white
-            }
-        }
-
-        var borderColor: UIColor {
-            switch self {
-            case .new:
-                return .mainBlue
-            case .continue:
-                return .clear
-            }
+    func setColor(reversal: Bool) {
+        if reversal {
+            configuration?.baseForegroundColor = .white
+            configuration?.baseBackgroundColor = .mainColor
+            configuration?.background.strokeColor = .clear
+        } else {
+            configuration?.baseForegroundColor = .mainColor
+            configuration?.baseBackgroundColor = .systemBackground
+            configuration?.background.strokeColor = .mainColor
         }
     }
 }

@@ -8,8 +8,8 @@
 import UIKit
 
 class HomeViewController: UIViewController {
-    private let newGameButton = GameButton(type: .new)
-    private let continueGameButton = GameButton(type: .continue)
+    private let newGameButton = GameButton(title: "New")
+    private let continueGameButton = GameButton(title: "Continue", reveralColor: true)
     private var savedGame: Sudoku?
 
     override func viewWillAppear(_ animated: Bool) {
@@ -62,9 +62,8 @@ class HomeViewController: UIViewController {
 
     @objc func tappedContinueButton(_ sender: UIButton) {
         let gameViewController = GameViewController()
-        if let savedGame {
-            gameViewController.sudoku = savedGame
-        }
+        gameViewController.sudoku = savedGame
+
         self.navigationController?.pushViewController(gameViewController, animated: true)
     }
 }
