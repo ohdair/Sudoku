@@ -27,6 +27,7 @@
 		F60BB94D2B031BDA005137FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F60BB94B2B031BDA005137FE /* LaunchScreen.storyboard */; };
 		F60BB9562B031F34005137FE /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9552B031F34005137FE /* GameButton.swift */; };
 		F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9582B0321D6005137FE /* TimeInterval.swift */; };
+		F61F1CD22B25683200AADED8 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61F1CD12B25683200AADED8 /* AlertView.swift */; };
 		F632725F2B13217E00F16FA8 /* CellButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F632725E2B13217E00F16FA8 /* CellButton.swift */; };
 		F63272612B1429DB00F16FA8 /* SectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63272602B1429DB00F16FA8 /* SectionView.swift */; };
 		F63272642B143B4000F16FA8 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63272632B143B4000F16FA8 /* BoardView.swift */; };
@@ -65,6 +66,7 @@
 		F60BB94E2B031BDA005137FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F60BB9552B031F34005137FE /* GameButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButton.swift; sourceTree = "<group>"; };
 		F60BB9582B0321D6005137FE /* TimeInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
+		F61F1CD12B25683200AADED8 /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		F632725E2B13217E00F16FA8 /* CellButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellButton.swift; sourceTree = "<group>"; };
 		F63272602B1429DB00F16FA8 /* SectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionView.swift; sourceTree = "<group>"; };
 		F63272632B143B4000F16FA8 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 				F689989E2B1ECD7E009AB0D2 /* InformationStackView.swift */,
 				F68998A02B1ED248009AB0D2 /* AbilityStackView.swift */,
 				F68998A22B1ED93E009AB0D2 /* NumberStackView.swift */,
+				F61F1CD12B25683200AADED8 /* AlertView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -270,6 +273,7 @@
 				F68998A12B1ED248009AB0D2 /* AbilityStackView.swift in Sources */,
 				F60B9D6E2B0AF5F70036AA1B /* UIColor.swift in Sources */,
 				F60B9D7E2B0DD2670036AA1B /* SudokuDataDTO.swift in Sources */,
+				F61F1CD22B25683200AADED8 /* AlertView.swift in Sources */,
 				F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */,
 				F60B9D742B0C9D740036AA1B /* AbilityButton.swift in Sources */,
 				F60BB9562B031F34005137FE /* GameButton.swift in Sources */,

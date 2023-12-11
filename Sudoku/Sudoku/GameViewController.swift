@@ -15,6 +15,8 @@ class GameViewController: UIViewController {
     private let boardView = BoardView()
     private let abilityStackView = AbilityStackView()
     private let numberStackView = NumberStackView()
+    private let blurEffectView = UIVisualEffectView()
+    private let alertView = AlertView()
 
     var cursor: IndexPath?
     var timer: Timer?
@@ -30,11 +32,8 @@ class GameViewController: UIViewController {
     }
 
     private func configureSudoku() {
-        LoadingIndicator.showLoading()
-
         if let sudoku {
             configure(of: sudoku)
-            LoadingIndicator.hideLoading()
         } else {
             requestSudoku()
         }
@@ -48,10 +47,20 @@ class GameViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = backBarButtonItem
         self.navigationItem.rightBarButtonItem = pauseBarButtonItem
 
+        blurEffectView.effect = UIBlurEffect(style: .systemUltraThinMaterial)
+        blurEffectView.alpha = 0.955
+        blurEffectView.frame = view.bounds
+        blurEffectView.isHidden = true
+        alertView.isHidden = true
+
         numberStackView.addTargetNumberButtons(self, selector: #selector(tappedNumberButton))
         abilityStackView.addTarget(self, selector: #selector(tappedMemoButton), ability: .memo)
         abilityStackView.addTarget(self, selector: #selector(tappedUndoButton), ability: .undo)
         abilityStackView.addTarget(self, selector: #selector(tappedEraseButton), ability: .erase)
+        alertView.backGameButton.addTarget(self, action: #selector(leaveGame), for: .touchDown)
+        alertView.continueButton.addTarget(self, action: #selector(tappedPauseBarButton), for: .touchDown)
+        alertView.newGameButton.addTarget(self, action: #selector(requestSudoku), for: .touchDown)
+        alertView.restartButton.addTarget(self, action: #selector(reConfigure), for: .touchDown)
         boardView.sections.forEach { sectionView in
             sectionView.delegate = self
         }
@@ -62,11 +71,14 @@ class GameViewController: UIViewController {
         view.addSubview(boardView)
         view.addSubview(abilityStackView)
         view.addSubview(numberStackView)
+        view.addSubview(blurEffectView)
+        view.addSubview(alertView)
 
         informationStackView.translatesAutoresizingMaskIntoConstraints = false
         boardView.translatesAutoresizingMaskIntoConstraints = false
         abilityStackView.translatesAutoresizingMaskIntoConstraints = false
         numberStackView.translatesAutoresizingMaskIntoConstraints = false
+        alertView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             informationStackView.widthAnchor.constraint(equalTo: view.widthAnchor),
@@ -84,19 +96,29 @@ class GameViewController: UIViewController {
 
             numberStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
             numberStackView.topAnchor.constraint(equalTo: abilityStackView.bottomAnchor, constant: 30),
-            numberStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            numberStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+
+            alertView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
+            alertView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
+            alertView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            alertView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -20)
         ])
     }
 
-    @objc private func tappedBackBarButton(_ sender: UIBarButtonItem) {
-        sudoku.isOnMemo = false
-        if let encoded = try? JSONEncoder().encode(sudoku) {
+    @objc private func tappedBackBarButton(_ sender: AnyObject) {
+        timer?.invalidate()
+        alert(type: .back)
+    }
+
+    @objc private func leaveGame() {
+        if let sudoku,
+           let encoded = try? JSONEncoder().encode(sudoku) {
             UserDefaults.standard.setValue(encoded, forKey: "Sudoku")
         }
         self.navigationController?.popViewController(animated: true)
     }
 
-    @objc private func tappedPauseBarButton(_ sender: UIBarButtonItem) {
+    @objc private func tappedPauseBarButton(_ sender: AnyObject) {
         if let timer, !timer.isValid {
             pauseBarButtonItem.image = UIImage(systemName: "pause.circle")
             self.timer = Timer.startRepeating(self, selector: #selector(runTime))
@@ -104,6 +126,8 @@ class GameViewController: UIViewController {
             pauseBarButtonItem.image = UIImage(systemName: "play.circle")
             timer?.invalidate()
         }
+
+        alert(type: .pause)
     }
 
     @objc private func runTime() {
@@ -171,7 +195,9 @@ class GameViewController: UIViewController {
         sudoku.isOnMemo = sender.isOnMemo
     }
 
-    private func requestSudoku() {
+    @objc private func requestSudoku() {
+        LoadingIndicator.showLoading()
+
         Networking().loadData { result in
             switch result {
             case .success(let sudokuData):
@@ -183,20 +209,38 @@ class GameViewController: UIViewController {
                 }
             case .failure(let failure):
                 print(failure)
+                DispatchQueue.main.async {
+                    self.alert(type: .error)
+                }
             }
-
             LoadingIndicator.hideLoading()
         }
     }
 
+    @objc private func reConfigure() {
+        let sudoku = Sudoku(data: sudoku.data)
+
+        DispatchQueue.main.async {
+            self.sudoku = sudoku
+            self.configure(of: sudoku)
+            self.boardView.paintedReset()
+        }
+    }
+
     private func configure(of sudoku: Sudoku) {
+        LoadingIndicator.showLoading()
+        blurEffectView.isHidden = true
+        alertView.isHidden = true
         boardView.updateAll(sudoku.board) { indexPath in
             paintText(associated: indexPath)
         }
         informationStackView.configure(.mistake(content: sudoku.mistake))
         informationStackView.configure(.timer(content: sudoku.time))
         informationStackView.configure(.difficulty(content: sudoku.data.difficulty.discription))
+        pauseBarButtonItem.image = UIImage(systemName: "pause.circle")
+        timer?.invalidate()
         timer = Timer.startRepeating(self, selector: #selector(runTime))
+        LoadingIndicator.hideLoading()
     }
 
     private func paint(associated indexPath: IndexPath) {
@@ -231,6 +275,16 @@ class GameViewController: UIViewController {
     private func increaseMistake() {
         sudoku.increaseMistake()
         informationStackView.configure(.mistake(content: sudoku.mistake))
+
+        if sudoku.isOverMistake {
+            alert(type: .overMistake)
+        }
+    }
+
+    private func alert(type: AlertView.Alert) {
+        alertView.configure(type: type)
+        alertView.isHidden.toggle()
+        blurEffectView.isHidden.toggle()
     }
 }
 

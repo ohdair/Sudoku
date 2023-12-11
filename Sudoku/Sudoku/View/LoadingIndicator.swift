@@ -17,7 +17,6 @@ class LoadingIndicator {
                     loadingIndicatorView = existedView
                 } else {
                     loadingIndicatorView = UIActivityIndicatorView(style: .large)
-                    /// 다른 UI가 눌리지 않도록 indicatorView의 크기를 full로 할당
                     loadingIndicatorView.frame = window.frame
                     loadingIndicatorView.color = .mainColor
                     window.addSubview(loadingIndicatorView)

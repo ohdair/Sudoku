@@ -15,6 +15,9 @@ struct Sudoku: Codable {
     var history: [[[SudokuItem]]] = []
     private(set) var cursor: IndexPath?
     var isOnMemo: Bool = false
+    var isOverMistake: Bool {
+        get { mistake > 2 ? true : false }
+    }
 
     init(data: SudokuData) {
         self.data = data
