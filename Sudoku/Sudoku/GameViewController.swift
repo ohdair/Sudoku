@@ -136,7 +136,8 @@ class GameViewController: UIViewController {
     }
 
     @objc private func tappedNumberButton(_ sender: NumberButton) {
-        guard let cursor else {
+        guard let cursor,
+              !sudoku.isProblem(indexPath: cursor) else {
             return
         }
 
@@ -224,6 +225,8 @@ class GameViewController: UIViewController {
             self.sudoku = sudoku
             self.configure(of: sudoku)
             self.boardView.paintedReset()
+            self.backBarButtonItem.isEnabled = true
+            self.pauseBarButtonItem.isEnabled = true
         }
     }
 
@@ -231,9 +234,12 @@ class GameViewController: UIViewController {
         LoadingIndicator.showLoading()
         blurEffectView.isHidden = true
         alertView.isHidden = true
+        backBarButtonItem.isEnabled = true
+        pauseBarButtonItem.isEnabled = true
         boardView.updateAll(sudoku.board) { indexPath in
             paintText(associated: indexPath)
         }
+        boardView.paintedReset()
         informationStackView.configure(.mistake(content: sudoku.mistake))
         informationStackView.configure(.timer(content: sudoku.time))
         informationStackView.configure(.difficulty(content: sudoku.data.difficulty.discription))
@@ -285,6 +291,8 @@ class GameViewController: UIViewController {
         alertView.configure(type: type)
         alertView.isHidden.toggle()
         blurEffectView.isHidden.toggle()
+        backBarButtonItem.isEnabled.toggle()
+        pauseBarButtonItem.isEnabled.toggle()
     }
 }
 
