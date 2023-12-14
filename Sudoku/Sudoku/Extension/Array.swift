@@ -23,4 +23,12 @@ extension Array where Element: Collection {
             }
         }
     }
+
+    func mapMatrix<T>(_ transform: (Element.Element) -> T) -> [[T]] {
+        return self.map { elements in
+            elements.map { element in
+                transform(element)
+            }
+        }
+    }
 }

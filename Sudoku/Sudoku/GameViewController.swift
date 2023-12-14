@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RxSwift
 
 class GameViewController: UIViewController {
     private lazy var backBarButtonItem = UIBarButtonItem.back(self, selector: #selector(tappedBackBarButton))
@@ -21,6 +22,8 @@ class GameViewController: UIViewController {
     var cursor: IndexPath?
     var timer: Timer?
     var sudoku: Sudoku!
+
+    let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -199,23 +202,21 @@ class GameViewController: UIViewController {
     @objc private func requestSudoku() {
         LoadingIndicator.showLoading()
 
-        Networking().loadData { result in
-            switch result {
-            case .success(let sudokuData):
-                let sudoku = Sudoku(data: sudokuData)
-
-                DispatchQueue.main.async {
+        Networking.request()
+            .subscribe { event in
+                switch event {
+                case .next(let sudokuData):
+                    let sudoku = Sudoku(data: sudokuData)
                     self.sudoku = sudoku
                     self.configure(of: sudoku)
-                }
-            case .failure(let failure):
-                print(failure)
-                DispatchQueue.main.async {
+                case .error(_):
+                    LoadingIndicator.hideLoading()
                     self.alert(type: .error)
+                case .completed:
+                    LoadingIndicator.hideLoading()
                 }
             }
-            LoadingIndicator.hideLoading()
-        }
+            .disposed(by: disposeBag)
     }
 
     @objc private func reConfigure() {
@@ -232,20 +233,22 @@ class GameViewController: UIViewController {
 
     private func configure(of sudoku: Sudoku) {
         LoadingIndicator.showLoading()
-        blurEffectView.isHidden = true
-        alertView.isHidden = true
-        backBarButtonItem.isEnabled = true
-        pauseBarButtonItem.isEnabled = true
-        boardView.updateAll(sudoku.board) { indexPath in
-            paintText(associated: indexPath)
+        DispatchQueue.main.async {
+            self.blurEffectView.isHidden = true
+            self.alertView.isHidden = true
+            self.backBarButtonItem.isEnabled = true
+            self.pauseBarButtonItem.isEnabled = true
+            self.boardView.updateAll(sudoku.board) { indexPath in
+                self.paintText(associated: indexPath)
+            }
+            self.boardView.paintedReset()
+            self.informationStackView.configure(.mistake(content: sudoku.mistake))
+            self.informationStackView.configure(.timer(content: sudoku.time))
+            self.informationStackView.configure(.difficulty(content: sudoku.data.difficulty.discription))
+            self.pauseBarButtonItem.image = UIImage(systemName: "pause.circle")
+            self.timer?.invalidate()
+            self.timer = Timer.startRepeating(self, selector: #selector(self.runTime))
         }
-        boardView.paintedReset()
-        informationStackView.configure(.mistake(content: sudoku.mistake))
-        informationStackView.configure(.timer(content: sudoku.time))
-        informationStackView.configure(.difficulty(content: sudoku.data.difficulty.discription))
-        pauseBarButtonItem.image = UIImage(systemName: "pause.circle")
-        timer?.invalidate()
-        timer = Timer.startRepeating(self, selector: #selector(runTime))
         LoadingIndicator.hideLoading()
     }
 

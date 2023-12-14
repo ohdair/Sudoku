@@ -21,8 +21,8 @@ struct Sudoku: Codable {
 
     init(data: SudokuData) {
         self.data = data
-        self.board = data.problem.map { row in
-            row.map { SudokuItem(number: $0) }
+        self.board = data.problem.mapMatrix { number in
+            SudokuItem(number: number)
         }
         self.history.append(self.board)
     }
