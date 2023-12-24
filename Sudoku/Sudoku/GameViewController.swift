@@ -249,14 +249,10 @@ class GameViewController: UIViewController {
         self.sudoku = sudoku
         configure(of: sudoku)
         boardView.paintedReset()
-        backBarButtonItem.isEnabled = true
-        pauseBarButtonItem.isEnabled = true
     }
 
     private func configure(of sudoku: Sudoku) {
         LoadingIndicator.showLoading()
-        backBarButtonItem.isEnabled = true
-        pauseBarButtonItem.isEnabled = true
         boardView.updateAll(sudoku.board) { indexPath in
             paintText(associated: indexPath)
         }
@@ -310,11 +306,10 @@ class GameViewController: UIViewController {
     }
 
     private func alert(type: AlertView.Alert) {
-//        alertView.configure(type: type)
-//        alertView.isHidden.toggle()
-//        blurEffectView.isHidden.toggle()
-        backBarButtonItem.isEnabled.toggle()
-        pauseBarButtonItem.isEnabled.toggle()
+        let alertViewController = AlertViewController(type: type)
+        alertViewController.modalPresentationStyle = .overFullScreen
+
+        present(alertViewController, animated: true, completion: nil)
     }
 }
 

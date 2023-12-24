@@ -12,6 +12,11 @@ final class AlertViewController: UIViewController {
     private let blurEffectView = UIVisualEffectView()
     private let alertView = AlertView()
 
+    convenience init(type: AlertView.Alert) {
+        self.init()
+        self.alertView.configure(type: type)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -38,4 +43,5 @@ final class AlertViewController: UIViewController {
             alertView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -20)
         ])
     }
+
 }

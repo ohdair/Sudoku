@@ -40,6 +40,7 @@
 		F68998A32B1ED93E009AB0D2 /* NumberStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68998A22B1ED93E009AB0D2 /* NumberStackView.swift */; };
 		F68998A72B1EFC45009AB0D2 /* IndexPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68998A62B1EFC45009AB0D2 /* IndexPath.swift */; };
 		F6AE1B5C2B204C6E00AD4CC5 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AE1B5B2B204C6E00AD4CC5 /* Array.swift */; };
+		F6BBA8EC2B37D16E0080D1E1 /* AlertButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BBA8EB2B37D16E0080D1E1 /* AlertButton.swift */; };
 		F6CD31CA2B231BC400FAC0C6 /* Zip2Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CD31C92B231BC400FAC0C6 /* Zip2Sequence.swift */; };
 		F6DF17DE2B2A944C008A28A6 /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = F6DF17DD2B2A944C008A28A6 /* RxBlocking */; };
 		F6DF17E02B2A944C008A28A6 /* RxBlocking-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = F6DF17DF2B2A944C008A28A6 /* RxBlocking-Dynamic */; };
@@ -91,6 +92,7 @@
 		F68998A22B1ED93E009AB0D2 /* NumberStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberStackView.swift; sourceTree = "<group>"; };
 		F68998A62B1EFC45009AB0D2 /* IndexPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexPath.swift; sourceTree = "<group>"; };
 		F6AE1B5B2B204C6E00AD4CC5 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
+		F6BBA8EB2B37D16E0080D1E1 /* AlertButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertButton.swift; sourceTree = "<group>"; };
 		F6CD31C92B231BC400FAC0C6 /* Zip2Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zip2Sequence.swift; sourceTree = "<group>"; };
 		F6DF17ED2B2AD374008A28A6 /* InformationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationViewModel.swift; sourceTree = "<group>"; };
 		F6EF981E2B15C520005FEA99 /* Sudoku.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sudoku.swift; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 				F68998A02B1ED248009AB0D2 /* AbilityStackView.swift */,
 				F68998A22B1ED93E009AB0D2 /* NumberStackView.swift */,
 				F61F1CD12B25683200AADED8 /* AlertView.swift */,
+				F6BBA8EB2B37D16E0080D1E1 /* AlertButton.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -325,6 +328,7 @@
 				F6DF17EE2B2AD374008A28A6 /* InformationViewModel.swift in Sources */,
 				F60B9D6E2B0AF5F70036AA1B /* UIColor.swift in Sources */,
 				F60B9D7E2B0DD2670036AA1B /* SudokuDataDTO.swift in Sources */,
+				F6BBA8EC2B37D16E0080D1E1 /* AlertButton.swift in Sources */,
 				F61F1CD22B25683200AADED8 /* AlertView.swift in Sources */,
 				F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */,
 				F60B9D742B0C9D740036AA1B /* AbilityButton.swift in Sources */,
