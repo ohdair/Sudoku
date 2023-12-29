@@ -10,20 +10,21 @@ import RxSwift
 import RxCocoa
 
 class GameViewController: UIViewController {
-    private lazy var backBarButtonItem = UIBarButtonItem.back(self, selector: #selector(tappedBackBarButton))
-    private lazy var pauseBarButtonItem = UIBarButtonItem.pause()
+    private let backBarButtonItem = UIBarButtonItem.back()
+    private let pauseBarButtonItem = UIBarButtonItem.pause()
 
     private let informationStackView = InformationStackView()
     private let boardView = BoardView()
     private let abilityStackView = AbilityStackView()
     private let numberStackView = NumberStackView()
+    private let disposeBag = DisposeBag()
 
-    var cursor: IndexPath?
-    var timer: Timer?
+    private var cursor: IndexPath?
+    private var informationViewModel: InformationViewModel!
+    private var alertViewModelInput: AlertViewModel.Input!
+    private var alertViewController: AlertViewController!
+
     var sudoku: Sudoku!
-    var informationViewModel: InformationViewModel!
-
-    let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,20 +34,82 @@ class GameViewController: UIViewController {
         setLayout()
         configureSudoku()
 
+        setViewModel()
+
+        bindAlertViewModel()
+        bindAlertButtons()
+        bindInformationViewModel()
+    }
+
+    func setViewModel() {
         informationViewModel = InformationViewModel(
             difficulty: sudoku.data.difficulty,
             mistake: sudoku.mistake,
             time: Int(sudoku.time)
         )
+    }
 
-        bindInformationViewModel()
+    func bindAlertViewModel() {
+        let pauseButtonTapped = pauseBarButtonItem.rx.tap.asDriver()
+        let backButtonTapped = backBarButtonItem.rx.tap.asDriver()
+
+        Driver.merge(pauseButtonTapped, backButtonTapped)
+            .drive { _ in
+                self.present(self.alertViewController, animated: true)
+            }
+            .disposed(by: disposeBag)
+
+        alertViewModelInput = AlertViewModel.Input(
+            backButtonTapped: backButtonTapped,
+            pauseButtonTapped: pauseButtonTapped,
+            mistakeTrigger: PublishSubject<Void>().asDriver(onErrorJustReturn: ()),
+            errorTrigger: PublishSubject<Void>().asDriver(onErrorJustReturn: ())
+        )
+
+        alertViewController = AlertViewController(input: alertViewModelInput)
+        alertViewController.modalPresentationStyle = .overFullScreen
+    }
+
+    func bindAlertButtons() {
+        alertViewController.alertButton(of: .continue).rx.tap
+            .asDriver()
+            .drive { _ in
+                self.dismiss(animated: true)
+            }
+            .disposed(by: disposeBag)
+
+        alertViewController.alertButton(of: .new).rx.tap
+            .asDriver()
+            .drive { _ in
+                // 새로운 Sudoku Fetch
+            }
+            .disposed(by: disposeBag)
+
+        alertViewController.alertButton(of: .quit).rx.tap
+            .asDriver()
+            .drive { _ in
+                if let sudoku = self.sudoku,
+                   let encoded = try? JSONEncoder().encode(sudoku) {
+                    UserDefaults.standard.setValue(encoded, forKey: "Sudoku")
+                }
+                self.dismiss(animated: false)
+                self.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+
+        alertViewController.alertButton(of: .restart).rx.tap
+            .asDriver()
+            .drive { _ in
+                // 기본적인 Sudoku 문제를 제외한 데이터 삭제
+            }
+            .disposed(by: disposeBag)
     }
 
     func bindInformationViewModel() {
         let toggleTimerDriver = Driver.merge(
-            pauseBarButtonItem.rx.tap.asDriver()
-            // MARK: - AlertViewController 생성 후 추가
-//            alertView.continueButton.rx.tap.asDriver()
+            pauseBarButtonItem.rx.tap.asDriver(),
+            backBarButtonItem.rx.tap.asDriver(),
+            alertViewController.alertButton(of: .continue).rx.tap.asDriver()
         )
 
         let input = InformationViewModel.Input(
@@ -75,14 +138,6 @@ class GameViewController: UIViewController {
                 self.setPauseBarButtonImage(through: isOn)
             }
             .disposed(by: disposeBag)
-
-        output.isOnTimer
-            .filter { !$0 }
-            .drive(onNext: { _ in
-                self.alert(type: .pause)
-            })
-            .disposed(by: disposeBag)
-
     }
 
     private func setPauseBarButtonImage(through isOn: Bool) {
@@ -148,21 +203,7 @@ class GameViewController: UIViewController {
             numberStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
             numberStackView.topAnchor.constraint(equalTo: abilityStackView.bottomAnchor, constant: 30),
             numberStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
-            
         ])
-    }
-
-    @objc private func tappedBackBarButton(_ sender: AnyObject) {
-        alert(type: .back)
-    }
-
-    @objc private func leaveGame() {
-        if let sudoku,
-           let encoded = try? JSONEncoder().encode(sudoku) {
-            UserDefaults.standard.setValue(encoded, forKey: "Sudoku")
-        }
-        self.navigationController?.popViewController(animated: true)
     }
 
     @objc private func tappedNumberButton(_ sender: NumberButton) {
@@ -238,7 +279,7 @@ class GameViewController: UIViewController {
             }, onError: { error in
                 print(error)
                 LoadingIndicator.hideLoading()
-                self.alert(type: .error)
+//                self.alert(type: .error)
             })
             .disposed(by: disposeBag)
     }
@@ -301,16 +342,10 @@ class GameViewController: UIViewController {
         sudoku.increaseMistake()
 
         if sudoku.isOverMistake {
-            alert(type: .overMistake)
+//            alert(type: .overMistake)
         }
     }
 
-    private func alert(type: AlertView.Alert) {
-        let alertViewController = AlertViewController(type: type)
-        alertViewController.modalPresentationStyle = .overFullScreen
-
-        present(alertViewController, animated: true, completion: nil)
-    }
 }
 
 extension GameViewController: SectionViewDelegate {

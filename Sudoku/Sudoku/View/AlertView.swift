@@ -9,13 +9,13 @@ import UIKit
 
 final class AlertView: UIView {
 
-    private let titleLabel = UILabel()
     private let stackView = UIStackView()
 
-    private let continueButton = AlertButton(type: .continue)
-    private let restartButton = AlertButton(type: .restart)
-    private let newGameButton = AlertButton(type: .new)
-    private let quitGameButton = AlertButton(type: .quit)
+    let titleLabel = UILabel()
+    let continueButton = AlertButton(type: .continue)
+    let restartButton = AlertButton(type: .restart)
+    let newGameButton = AlertButton(type: .new)
+    let quitGameButton = AlertButton(type: .quit)
 
     override init(frame: CGRect) {
         super.init(frame: .zero)
@@ -60,39 +60,6 @@ final class AlertView: UIView {
         ])
     }
 
-    func configure(type: AlertView.Alert) {
-        switch type {
-        case .pause:
-            titleLabel.text = "일시정지"
-            titleLabel.font = .systemFont(ofSize: 26, weight: .bold)
-            continueButton.isHidden = false
-            restartButton.isHidden = true
-            newGameButton.isHidden = false
-            quitGameButton.isHidden = true
-        case .back:
-            titleLabel.text = "게임을 종료하시겠습니까?"
-            titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
-            continueButton.isHidden = false
-            restartButton.isHidden = true
-            newGameButton.isHidden = true
-            quitGameButton.isHidden = false
-        case .overMistake:
-            titleLabel.text = "실수를 초과하였습니다."
-            titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
-            continueButton.isHidden = true
-            restartButton.isHidden = false
-            newGameButton.isHidden = false
-            quitGameButton.isHidden = true
-        case .error:
-            titleLabel.text = "네트워크 문제가 발생하였습니다."
-            titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
-            continueButton.isHidden = true
-            restartButton.isHidden = true
-            newGameButton.isHidden = true
-            quitGameButton.isHidden = false
-        }
-    }
-
 }
 
 extension AlertView {
@@ -102,6 +69,28 @@ extension AlertView {
         case back
         case overMistake
         case error
+
+        var title: String {
+            switch self {
+            case .pause:
+                "일시정지"
+            case .back:
+                "게임을 종료하시겠습니까?"
+            case .overMistake:
+                "실수를 초과하였습니다."
+            case .error:
+                "네트워크 문제가 발생하였습니다."
+            }
+        }
+
+        var titleFontSize: CGFloat {
+            switch self {
+            case .pause:
+                26
+            default:
+                20
+            }
+        }
     }
 
 }

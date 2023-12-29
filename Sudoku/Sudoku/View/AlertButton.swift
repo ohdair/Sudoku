@@ -15,9 +15,9 @@ final class AlertButton: GameButton {
             self.init(title: "새 게임", reveralColor: true)
             configuration?.baseBackgroundColor = .red.withAlphaComponent(0.8)
         case .continue:
-            self.init(title: "다시 시작", reveralColor: true)
-        case .restart:
             self.init(title: "게임 재개", reveralColor: true)
+        case .restart:
+            self.init(title: "다시 시작", reveralColor: true)
         case .quit:
             self.init(title: "나가기", reveralColor: true)
             configuration?.baseBackgroundColor = .red.withAlphaComponent(0.8)
