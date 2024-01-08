@@ -48,7 +48,6 @@ final class GameViewModel: ViewModelType {
         Networking.request()
             .subscribe { sudokuData in
                 let sudoku = Sudoku(data: sudokuData)
-
                 self.sudoku.onNext(sudoku)
                 self.fetching.onNext(false)
             } onError: { error in
@@ -83,11 +82,17 @@ final class GameViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
 
+        input.viewDidLoad
+            .subscribe { _ in
+                self.fetchSudoku()
+            }
+            .disposed(by: disposeBag)
+
         let informationViewModelOutput = bindingInformationViewModel(timerTrigger: input.timerTrigger)
 
         return Output(
             informationOutput: informationViewModelOutput,
-            sudoku: sudoku.asObservable(),
+            sudoku: sudoku,
             loading: fetching,
             alert: BehaviorSubject<AlertView.Alert>(value: .back).asObservable()
         )

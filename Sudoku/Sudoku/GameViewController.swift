@@ -33,15 +33,13 @@ class GameViewController: UIViewController {
         self.gameViewModel = viewModel
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        if gameViewModel == nil {
-            gameViewModel = GameViewModel()
-        }
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+
+        if gameViewModel == nil {
+            gameViewModel = GameViewModel()
+        }
 
         setUI()
         setLayout()
@@ -53,6 +51,7 @@ class GameViewController: UIViewController {
 
         bindAlertViewModel()
         bindAlertButtons()
+        bindGameViewModel()
     }
 
     func bindGameViewModel() {
@@ -76,20 +75,39 @@ class GameViewController: UIViewController {
             numberButtonTapped: numberButtonTapped()
         )
 
-        // MARK: - Information Output 관련
-//        output.difficulty
-//            .drive(self.informationStackView.label(of: .difficulty).rx.text)
-//            .disposed(by: disposeBag)
-//
-//        output.mistake
-//            .map { "\($0) / 3"}
-//            .drive(self.informationStackView.label(of: .mistake).rx.text)
-//            .disposed(by: disposeBag)
-//
-//        output.time
-//            .map { self.formatSeconds($0) }
-//            .drive(self.informationStackView.label(of: .timer).rx.text)
-//            .disposed(by: disposeBag)
+        let output = gameViewModel.transform(input: input)
+
+        output.sudoku
+            .compactMap { $0 }
+            .subscribe { sudoku in
+                // MARK: - row, column을 이용하여 indexPath를 만들고 Button에 Item을 적용
+                sudoku.board.forEachMatrix { row, column, sudokuItem in
+                    let indexPath = IndexPath(row: row, column: column)
+                    let button = self.boardView.cellButton(of: indexPath)
+                    button.update(to: sudokuItem)
+                }
+            }
+            .disposed(by: disposeBag)
+
+        output.loading
+            .subscribe { isLoading in
+                isLoading ? LoadingIndicator.showLoading() : LoadingIndicator.hideLoading()
+            }
+            .disposed(by: disposeBag)
+
+        output.informationOutput.difficulty
+            .drive(self.informationStackView.label(of: .difficulty).rx.text)
+            .disposed(by: disposeBag)
+
+        output.informationOutput.mistake
+            .map { "\($0) / 3"}
+            .drive(self.informationStackView.label(of: .mistake).rx.text)
+            .disposed(by: disposeBag)
+
+        output.informationOutput.time
+            .map { $0.time }
+            .drive(self.informationStackView.label(of: .timer).rx.text)
+            .disposed(by: disposeBag)
 
         viewDidLoad.onNext(())
     }
@@ -196,13 +214,13 @@ class GameViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = backBarButtonItem
         self.navigationItem.rightBarButtonItem = pauseBarButtonItem
 
-        numberStackView.addTargetNumberButtons(self, selector: #selector(tappedNumberButton))
-        abilityStackView.addTarget(self, selector: #selector(tappedMemoButton), ability: .memo)
-        abilityStackView.addTarget(self, selector: #selector(tappedUndoButton), ability: .undo)
-        abilityStackView.addTarget(self, selector: #selector(tappedEraseButton), ability: .erase)
-        boardView.sections.forEach { sectionView in
-            sectionView.delegate = self
-        }
+//        numberStackView.addTargetNumberButtons(self, selector: #selector(tappedNumberButton))
+//        abilityStackView.addTarget(self, selector: #selector(tappedMemoButton), ability: .memo)
+//        abilityStackView.addTarget(self, selector: #selector(tappedUndoButton), ability: .undo)
+//        abilityStackView.addTarget(self, selector: #selector(tappedEraseButton), ability: .erase)
+//        boardView.sections.forEach { sectionView in
+//            sectionView.delegate = self
+//        }
     }
 
     private func setLayout() {

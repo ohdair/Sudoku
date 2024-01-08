@@ -20,13 +20,13 @@ final class InformationViewModel: ViewModelType {
     struct Output {
         var difficulty: Driver<String>
         var mistake: Driver<Int>
-        var time: Driver<Int>
+        var time: Driver<TimeInterval>
     }
 
     // MARK: - property
     private let difficulty = BehaviorRelay<String>(value: "")
     private let mistake = BehaviorRelay<Int>(value: 0)
-    private let time = BehaviorRelay<Int>(value: 0)
+    private let time = BehaviorRelay<TimeInterval>(value: 0)
     private let isOnTimer = BehaviorRelay<Bool>(value: true)
     private let disposeBag = DisposeBag()
 
@@ -36,15 +36,13 @@ final class InformationViewModel: ViewModelType {
     }
 
     func transform(input: Input) -> Output {
-        let startedTime = 0
-
         input.sudoku
             .compactMap { $0 }
             .subscribe { sudoku in
                 let difficulty = sudoku.data.difficulty.discription
                 self.difficulty.accept(difficulty)
                 self.mistake.accept(sudoku.mistake)
-                startedTime = sudoku.time
+                self.time.accept(sudoku.time)
             }
             .disposed(by: disposeBag)
 
@@ -62,20 +60,21 @@ final class InformationViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
 
-        let time = Observable<Int>
+
+        Observable<Int>
             .interval(.seconds(1), scheduler: MainScheduler.instance)
             .withLatestFrom(isOnTimer)
             .filter { $0 }
-            .scan(startedTime) { time, _ in
-                time + 1
+            .subscribe { _ in
+                let value = self.time.value
+                self.time.accept(value + 1)
             }
-            .startWith(startedTime)
-            .asDriver(onErrorJustReturn: startedTime)
+            .disposed(by: disposeBag)
 
         return Output(
             difficulty: difficulty.asDriver(),
             mistake: mistake.asDriver(),
-            time: time
+            time: time.asDriver()
         )
     }
 }
