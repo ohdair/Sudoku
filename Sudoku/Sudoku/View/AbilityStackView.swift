@@ -8,6 +8,9 @@
 import UIKit
 
 class AbilityStackView: UIStackView {
+
+    private(set) var abilityButtons = [AbilityButton]()
+
     override init(frame: CGRect) {
         super.init(frame: .zero)
 
@@ -20,8 +23,9 @@ class AbilityStackView: UIStackView {
 
     private func setUI() {
         AbilityButton.Ability.allCases.forEach { ability in
-            let abilityButton = AbilityButton(of: ability)
-            addArrangedSubview(abilityButton)
+            let button = AbilityButton(of: ability)
+            abilityButtons.append(button)
+            addArrangedSubview(button)
         }
 
         distribution = .equalCentering

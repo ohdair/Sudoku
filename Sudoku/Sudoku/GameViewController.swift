@@ -24,7 +24,20 @@ class GameViewController: UIViewController {
     private var alertViewModelInput: AlertViewModel.Input!
     private var alertViewController: AlertViewController!
 
+    private var gameViewModel: GameViewModel!
+
     var sudoku: Sudoku!
+
+    convenience init(viewModel: GameViewModel) {
+        self.init()
+        self.gameViewModel = viewModel
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        if gameViewModel == nil {
+            gameViewModel = GameViewModel()
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,21 +45,91 @@ class GameViewController: UIViewController {
 
         setUI()
         setLayout()
-        configureSudoku()
+//        configureSudoku()
 
-        setViewModel()
+        
+        // sudoku fetch 하는 동안
+        // viewmodel 설정을 기다리도록
 
         bindAlertViewModel()
         bindAlertButtons()
-        bindInformationViewModel()
     }
 
-    func setViewModel() {
-        informationViewModel = InformationViewModel(
-            difficulty: sudoku.data.difficulty,
-            mistake: sudoku.mistake,
-            time: Int(sudoku.time)
+    func bindGameViewModel() {
+        let viewDidLoad = PublishSubject<Void>()
+        let timerTrigger = Driver.merge(
+            pauseBarButtonItem.rx.tap.asDriver(),
+            backBarButtonItem.rx.tap.asDriver(),
+            alertViewController.alertButton(of: .continue).rx.tap.asDriver()
         )
+
+        let newGameTapped = alertViewController.alertButton(of: .new).rx.tap.asDriver()
+        let reGmaeTapped = alertViewController.alertButton(of: .restart).rx.tap.asDriver()
+
+        let input = GameViewModel.Input(
+            viewDidLoad: viewDidLoad.asObservable(),
+            timerTrigger: timerTrigger,
+            newGameTapped: newGameTapped,
+            reGameTapped: reGmaeTapped,
+            cellButtonTapped: cellButtonTapped(),
+            abilityButtonTapped: abilityButtonTapped(),
+            numberButtonTapped: numberButtonTapped()
+        )
+
+        // MARK: - Information Output 관련
+//        output.difficulty
+//            .drive(self.informationStackView.label(of: .difficulty).rx.text)
+//            .disposed(by: disposeBag)
+//
+//        output.mistake
+//            .map { "\($0) / 3"}
+//            .drive(self.informationStackView.label(of: .mistake).rx.text)
+//            .disposed(by: disposeBag)
+//
+//        output.time
+//            .map { self.formatSeconds($0) }
+//            .drive(self.informationStackView.label(of: .timer).rx.text)
+//            .disposed(by: disposeBag)
+
+        viewDidLoad.onNext(())
+    }
+
+    private func cellButtonTapped() -> Driver<IndexPath> {
+        let cellButtonDrivers = boardView.sections.flatMap { sectionView in
+            sectionView.buttons.map { button in
+                let tapEvent = button.rx.tap
+                let driver = tapEvent
+                    .map { button.indexPath }
+                    .asDriver(onErrorJustReturn: IndexPath())
+                return driver
+            }
+        }
+
+        return Driver.merge(cellButtonDrivers)
+    }
+
+    private func abilityButtonTapped() -> Driver<AbilityButton.Ability> {
+        let abilityButtonDrivers = abilityStackView.abilityButtons.map { button in
+            let tapEvent = button.rx.tap
+            let driver = tapEvent
+                .map { button.type }
+                .asDriver(onErrorJustReturn: .undo)
+            return driver
+        }
+
+        return Driver.merge(abilityButtonDrivers)
+    }
+
+    private func numberButtonTapped() -> Driver<Int> {
+        let numberButtonDrivers = numberStackView.numberButtons.map { button in
+            let tapEvent = button.rx.tap
+            let driver = tapEvent
+                .map { button.number }
+                .asDriver(onErrorJustReturn: 0)
+            return driver
+        }
+
+        return Driver.merge(numberButtonDrivers)
     }
 
     func bindAlertViewModel() {
@@ -103,57 +186,6 @@ class GameViewController: UIViewController {
                 // 기본적인 Sudoku 문제를 제외한 데이터 삭제
             }
             .disposed(by: disposeBag)
-    }
-
-    func bindInformationViewModel() {
-        let toggleTimerDriver = Driver.merge(
-            pauseBarButtonItem.rx.tap.asDriver(),
-            backBarButtonItem.rx.tap.asDriver(),
-            alertViewController.alertButton(of: .continue).rx.tap.asDriver()
-        )
-
-        let input = InformationViewModel.Input(
-            toggleTimer: toggleTimerDriver,
-            mistakeTrigger: PublishSubject<Void>().asDriver(onErrorJustReturn: ())
-        )
-
-        let output = informationViewModel.transform(input: input)
-
-        output.difficulty
-            .drive(self.informationStackView.label(of: .difficulty).rx.text)
-            .disposed(by: disposeBag)
-
-        output.mistake
-            .map { "\($0) / 3"}
-            .drive(self.informationStackView.label(of: .mistake).rx.text)
-            .disposed(by: disposeBag)
-
-        output.time
-            .map { self.formatSeconds($0) }
-            .drive(self.informationStackView.label(of: .timer).rx.text)
-            .disposed(by: disposeBag)
-
-        output.isOnTimer
-            .drive { isOn in
-                self.setPauseBarButtonImage(through: isOn)
-            }
-            .disposed(by: disposeBag)
-    }
-
-    private func setPauseBarButtonImage(through isOn: Bool) {
-        if isOn {
-            self.pauseBarButtonItem.image = UIImage(systemName: "pause.circle")
-        } else {
-            self.pauseBarButtonItem.image = UIImage(systemName: "play.circle")
-        }
-    }
-
-    private func configureSudoku() {
-        if let sudoku {
-            configure(of: sudoku)
-        } else {
-            requestSudoku()
-        }
     }
 
     private func setUI() {
@@ -267,7 +299,7 @@ class GameViewController: UIViewController {
         sudoku.isOnMemo = sender.isOnMemo
     }
 
-    @objc private func requestSudoku() {
+    private func requestSudoku() async {
         LoadingIndicator.showLoading()
 
         Networking.request()
@@ -300,13 +332,6 @@ class GameViewController: UIViewController {
         boardView.paintedReset()
         pauseBarButtonItem.image = UIImage(systemName: "pause.circle")
         LoadingIndicator.hideLoading()
-
-        // MARK: - RxSwift Test
-        informationViewModel = InformationViewModel(
-            difficulty: sudoku.data.difficulty,
-            mistake: sudoku.mistake,
-            time: Int(sudoku.time)
-        )
     }
 
     private func paint(associated indexPath: IndexPath) {

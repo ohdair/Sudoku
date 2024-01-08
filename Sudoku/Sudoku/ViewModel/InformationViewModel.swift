@@ -12,61 +12,69 @@ import RxCocoa
 final class InformationViewModel: ViewModelType {
 
     struct Input {
-        var toggleTimer: Driver<Void>
-        var mistakeTrigger: Driver<Void>
+        var sudoku: Observable<Sudoku?>
+        var timerTrigger: Driver<Void>
+        var mistakeTrigger: Observable<Void>
     }
 
     struct Output {
         var difficulty: Driver<String>
         var mistake: Driver<Int>
-        var isOnTimer: Driver<Bool>
         var time: Driver<Int>
     }
 
     // MARK: - property
+    private let difficulty = BehaviorRelay<String>(value: "")
+    private let mistake = BehaviorRelay<Int>(value: 0)
+    private let time = BehaviorRelay<Int>(value: 0)
+    private let isOnTimer = BehaviorRelay<Bool>(value: true)
+    private let disposeBag = DisposeBag()
 
-    private let difficulty: GameDifficulty
-    private var mistake: Int
-    private var time: Int
-
-    init(
-        difficulty: GameDifficulty,
-        mistake: Int,
-        time: Int
-    ) {
-        self.difficulty = difficulty
-        self.mistake = mistake
-        self.time = time
+    private func toggle() {
+        let value = isOnTimer.value
+        isOnTimer.accept(!value)
     }
 
     func transform(input: Input) -> Output {
-        let difficulty = Driver<String>
-            .from(optional: self.difficulty.discription)
-            .startWith(self.difficulty.discription)
+        let startedTime = 0
 
-        let mistake = input.mistakeTrigger
-            .scan(self.mistake) { count, _ in
-                return count < 3 ? count + 1 : count
+        input.sudoku
+            .compactMap { $0 }
+            .subscribe { sudoku in
+                let difficulty = sudoku.data.difficulty.discription
+                self.difficulty.accept(difficulty)
+                self.mistake.accept(sudoku.mistake)
+                startedTime = sudoku.time
             }
-            .startWith(self.mistake)
+            .disposed(by: disposeBag)
 
-        let isOnTimer: Driver<Bool> = input.toggleTimer
-            .scan(true) { (previousValue, _) in
-                return !previousValue
+        input.timerTrigger
+            .drive { _ in
+                self.toggle()
             }
-            .startWith(true)
+            .disposed(by: disposeBag)
 
-        let time = Driver<Int>
-            .interval(.seconds(1))
-            .withLatestFrom(isOnTimer) { $1 ? 1 : 0 }
-            .filter { $0 > 0 }
-            .scan(self.time) { $0 + $1 }
-            .startWith(self.time)
+        input.mistakeTrigger
+            .subscribe { _ in
+                let value = self.mistake.value
+                let mistake = value < 3 ? value + 1 : value
+                self.mistake.accept(mistake)
+            }
+            .disposed(by: disposeBag)
+
+        let time = Observable<Int>
+            .interval(.seconds(1), scheduler: MainScheduler.instance)
+            .withLatestFrom(isOnTimer)
+            .filter { $0 }
+            .scan(startedTime) { time, _ in
+                time + 1
+            }
+            .startWith(startedTime)
+            .asDriver(onErrorJustReturn: startedTime)
 
         return Output(
-            difficulty: difficulty,
-            mistake: mistake,
-            isOnTimer: isOnTimer,
+            difficulty: difficulty.asDriver(),
+            mistake: mistake.asDriver(),
             time: time
         )
     }

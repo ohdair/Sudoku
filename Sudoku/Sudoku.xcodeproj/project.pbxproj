@@ -40,6 +40,7 @@
 		F68998A12B1ED248009AB0D2 /* AbilityStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68998A02B1ED248009AB0D2 /* AbilityStackView.swift */; };
 		F68998A32B1ED93E009AB0D2 /* NumberStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68998A22B1ED93E009AB0D2 /* NumberStackView.swift */; };
 		F68998A72B1EFC45009AB0D2 /* IndexPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68998A62B1EFC45009AB0D2 /* IndexPath.swift */; };
+		F69755A22B45088F00EF8737 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69755A12B45088F00EF8737 /* GameViewModel.swift */; };
 		F6AE1B5C2B204C6E00AD4CC5 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AE1B5B2B204C6E00AD4CC5 /* Array.swift */; };
 		F6BBA8EC2B37D16E0080D1E1 /* AlertButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BBA8EB2B37D16E0080D1E1 /* AlertButton.swift */; };
 		F6CD31CA2B231BC400FAC0C6 /* Zip2Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CD31C92B231BC400FAC0C6 /* Zip2Sequence.swift */; };
@@ -93,6 +94,7 @@
 		F68998A02B1ED248009AB0D2 /* AbilityStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbilityStackView.swift; sourceTree = "<group>"; };
 		F68998A22B1ED93E009AB0D2 /* NumberStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberStackView.swift; sourceTree = "<group>"; };
 		F68998A62B1EFC45009AB0D2 /* IndexPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexPath.swift; sourceTree = "<group>"; };
+		F69755A12B45088F00EF8737 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		F6AE1B5B2B204C6E00AD4CC5 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		F6BBA8EB2B37D16E0080D1E1 /* AlertButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertButton.swift; sourceTree = "<group>"; };
 		F6CD31C92B231BC400FAC0C6 /* Zip2Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zip2Sequence.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 			isa = PBXGroup;
 			children = (
 				F6325E692B3BC0BF00EDD606 /* AlertViewModel.swift */,
+				F69755A12B45088F00EF8737 /* GameViewModel.swift */,
 				F6DF17ED2B2AD374008A28A6 /* InformationViewModel.swift */,
 				F627F4682B30804B007EFEC7 /* ViewModelType.swift */,
 			);
@@ -322,6 +325,7 @@
 				F627F46B2B308345007EFEC7 /* Information.swift in Sources */,
 				F60B9D702B0B04CC0036AA1B /* GameViewController.swift in Sources */,
 				F6EF981F2B15C520005FEA99 /* Sudoku.swift in Sources */,
+				F69755A22B45088F00EF8737 /* GameViewModel.swift in Sources */,
 				F6EF98222B15C844005FEA99 /* SudokuItem.swift in Sources */,
 				F60B9D792B0DD1EB0036AA1B /* Networking.swift in Sources */,
 				F627F4692B30804B007EFEC7 /* ViewModelType.swift in Sources */,
