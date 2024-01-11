@@ -24,35 +24,36 @@ final class GameViewModel: ViewModelType {
     struct Output {
         var informationOutput: InformationViewModel.Output
 
-        var sudoku: Observable<Sudoku?>
-        var loading: Observable<Bool>
+        var sudoku: Observable<Sudoku>
+        var loading: Driver<Bool>
         var alert: Observable<AlertView.Alert>
     }
 
-    private let sudoku = BehaviorSubject<Sudoku?>(value: nil)
+    private let sudoku = PublishSubject<Sudoku>()
     private let mistakeTrigger = PublishSubject<Void>()
     private let fetching = PublishSubject<Bool>()
     private let disposeBag = DisposeBag()
-
     private let informationViewModel = InformationViewModel()
 
+    private var savedSudoku: Sudoku?
+
     init(sudoku: Sudoku) {
-        self.sudoku.onNext(sudoku)
+        self.savedSudoku = sudoku
     }
 
     init() { }
 
     private func fetchSudoku() {
-        fetching.onNext(true)
+        LoadingIndicator.showLoading()
 
         Networking.request()
             .subscribe { sudokuData in
                 let sudoku = Sudoku(data: sudokuData)
                 self.sudoku.onNext(sudoku)
-                self.fetching.onNext(false)
+                LoadingIndicator.hideLoading()
             } onError: { error in
+                LoadingIndicator.hideLoading()
                 self.sudoku.onError(error)
-                self.fetching.onNext(false)
             }
             .disposed(by: disposeBag)
     }
@@ -67,8 +68,6 @@ final class GameViewModel: ViewModelType {
             .disposed(by: disposeBag)
     }
 
-
-    // MARK: - 임시 메서드
     func transform(input: Input) -> Output {
         input.newGameTapped
             .drive { _ in
@@ -84,7 +83,11 @@ final class GameViewModel: ViewModelType {
 
         input.viewDidLoad
             .subscribe { _ in
-                self.fetchSudoku()
+                if let savedSudoku = self.savedSudoku {
+                    self.sudoku.onNext(savedSudoku)
+                } else {
+                    self.fetchSudoku()
+                }
             }
             .disposed(by: disposeBag)
 
@@ -93,8 +96,8 @@ final class GameViewModel: ViewModelType {
         return Output(
             informationOutput: informationViewModelOutput,
             sudoku: sudoku,
-            loading: fetching,
-            alert: BehaviorSubject<AlertView.Alert>(value: .back).asObservable()
+            loading: fetching.asDriver(onErrorJustReturn: false),
+            alert: BehaviorSubject<AlertView.Alert>(value: .back)
         )
     }
 

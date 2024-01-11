@@ -61,8 +61,8 @@ class HomeViewController: UIViewController {
     }
 
     @objc func tappedContinueButton(_ sender: UIButton) {
-        let gameViewController = GameViewController()
-        gameViewController.sudoku = savedGame
+        let gameViewModel = GameViewModel(sudoku: savedGame!)
+        let gameViewController = GameViewController(viewModel: gameViewModel)
 
         self.navigationController?.pushViewController(gameViewController, animated: true)
     }

@@ -12,7 +12,7 @@ import RxCocoa
 final class InformationViewModel: ViewModelType {
 
     struct Input {
-        var sudoku: Observable<Sudoku?>
+        var sudoku: Observable<Sudoku>
         var timerTrigger: Driver<Void>
         var mistakeTrigger: Observable<Void>
     }

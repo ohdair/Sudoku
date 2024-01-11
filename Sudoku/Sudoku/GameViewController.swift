@@ -78,9 +78,8 @@ class GameViewController: UIViewController {
         let output = gameViewModel.transform(input: input)
 
         output.sudoku
-            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe { sudoku in
-                // MARK: - row, column을 이용하여 indexPath를 만들고 Button에 Item을 적용
                 sudoku.board.forEachMatrix { row, column, sudokuItem in
                     let indexPath = IndexPath(row: row, column: column)
                     let button = self.boardView.cellButton(of: indexPath)
@@ -90,7 +89,7 @@ class GameViewController: UIViewController {
             .disposed(by: disposeBag)
 
         output.loading
-            .subscribe { isLoading in
+            .drive { isLoading in
                 isLoading ? LoadingIndicator.showLoading() : LoadingIndicator.hideLoading()
             }
             .disposed(by: disposeBag)
