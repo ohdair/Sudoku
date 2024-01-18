@@ -12,9 +12,11 @@ import RxCocoa
 final class InformationViewModel: ViewModelType {
 
     struct Input {
-        var sudoku: Observable<Sudoku>
-        var timerTrigger: Driver<Void>
+        var difficulty: Observable<GameDifficulty>
+        var mistake: Observable<Int>
         var mistakeTrigger: Observable<Void>
+        var time: Observable<TimeInterval>
+        var timerTrigger: Driver<Void>
     }
 
     struct Output {
@@ -24,57 +26,68 @@ final class InformationViewModel: ViewModelType {
     }
 
     // MARK: - property
-    private let difficulty = BehaviorRelay<String>(value: "")
     private let mistake = BehaviorRelay<Int>(value: 0)
     private let time = BehaviorRelay<TimeInterval>(value: 0)
-    private let isOnTimer = BehaviorRelay<Bool>(value: true)
+    private let isOnTimer = BehaviorRelay<Bool>(value: false)
     private let disposeBag = DisposeBag()
 
-    private func toggle() {
-        let value = isOnTimer.value
-        isOnTimer.accept(!value)
-    }
-
     func transform(input: Input) -> Output {
-        input.sudoku
-            .subscribe { sudoku in
-                let difficulty = sudoku.data.difficulty.discription
-                self.difficulty.accept(difficulty)
-                self.mistake.accept(sudoku.mistake)
-                self.time.accept(sudoku.time)
+        let difficulty = input.difficulty
+            .map { difficulty in
+                difficulty.discription
+            }
+            .asDriver(onErrorJustReturn: "")
+
+        input.mistakeTrigger
+            .subscribe { _ in
+                self.updateMistake()
+            }
+            .disposed(by: disposeBag)
+
+        input.time
+            .subscribe { time in
+                self.time.accept(time)
+                self.timerToggle()
             }
             .disposed(by: disposeBag)
 
         input.timerTrigger
             .drive { _ in
-                self.toggle()
+                self.timerToggle()
             }
             .disposed(by: disposeBag)
 
-        input.mistakeTrigger
-            .subscribe { _ in
-                let value = self.mistake.value
-                let mistake = value < 3 ? value + 1 : value
-                self.mistake.accept(mistake)
-            }
-            .disposed(by: disposeBag)
-
-
-        Observable<Int>
-            .interval(.seconds(1), scheduler: MainScheduler.instance)
-            .withLatestFrom(isOnTimer)
-            .filter { $0 }
-            .subscribe { _ in
-                let value = self.time.value
-                self.time.accept(value + 1)
+        // MARK: - 타이머가 ON일 때, time 1씩 증가
+        Driver<Int>
+            .interval(.seconds(1))
+            .filter { _ in self.isOnTimer.value }
+            .drive { _ in
+                self.updateTimer()
             }
             .disposed(by: disposeBag)
 
         return Output(
-            difficulty: difficulty.asDriver(),
+            difficulty: difficulty,
             mistake: mistake.asDriver(),
             time: time.asDriver()
         )
+    }
+
+    private func timerToggle() {
+        let value = isOnTimer.value
+        isOnTimer.accept(!value)
+    }
+
+    private func updateMistake() {
+        let mistake = self.mistake.value
+        let updatedMistake = mistake < 3 ? mistake + 1 : mistake
+        self.mistake.accept(updatedMistake)
+    }
+
+    private func updateTimer() {
+        let time = self.time.value
+        let updatedTime = time + 1
+        self.time.accept(updatedTime)
     }
 }
 

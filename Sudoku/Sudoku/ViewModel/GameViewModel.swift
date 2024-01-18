@@ -152,10 +152,15 @@ final class GameViewModel: ViewModelType {
     }
 
     private func bindingInformationViewModel(timerTrigger: Driver<Void>) -> InformationViewModel.Output {
+        let observableDifficulty = sudoku.map { $0.data.difficulty }
+        let observableMistake = sudoku.map { $0.mistake }
+        let observableTime = sudoku.map { $0.time }
         let input = InformationViewModel.Input(
-            sudoku: sudoku,
-            timerTrigger: timerTrigger,
-            mistakeTrigger: mistakeTrigger
+            difficulty: observableDifficulty,
+            mistake: observableMistake,
+            mistakeTrigger: mistakeTrigger,
+            time: observableTime,
+            timerTrigger: timerTrigger
         )
 
         return informationViewModel.transform(input: input)
