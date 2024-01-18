@@ -16,14 +16,14 @@ final class GameViewModel: ViewModelType {
         var timerTrigger: Driver<Void>
         var newGameTapped: Driver<Void>
         var reGameTapped: Driver<Void>
-        var cellButtonTapped: Driver<IndexPath>
-        var abilityButtonTapped: Driver<AbilityButton.Ability>
-        var numberButtonTapped: Driver<Int>
+        var cellButtonTapped: Observable<IndexPath>
+        var abilityButtonTapped: Observable<AbilityButton.Ability>
+        var numberButtonTapped: Observable<Int>
     }
 
     struct Output {
         var informationOutput: InformationViewModel.Output
-
+        var boardOutput: BoardViewModel.Output
         var sudoku: Observable<Sudoku>
         var loading: Driver<Bool>
         var alert: Observable<AlertView.Alert>
@@ -34,6 +34,9 @@ final class GameViewModel: ViewModelType {
     private let fetching = PublishSubject<Bool>()
     private let disposeBag = DisposeBag()
     private let informationViewModel = InformationViewModel()
+
+    private let isOnMemo = BehaviorSubject<Bool>(value: false)
+    private let boardViewModel = BoardViewModel()
 
     private var savedSudoku: Sudoku?
 
@@ -60,7 +63,6 @@ final class GameViewModel: ViewModelType {
 
     private func reformSudoku() {
         sudoku
-            .compactMap { $0 }
             .map { Sudoku(data: $0.data) }
             .subscribe { newSudoku in
                 self.sudoku.onNext(newSudoku)
@@ -91,10 +93,58 @@ final class GameViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
 
+        let isMemo = input.abilityButtonTapped
+            .filter { $0 == .memo }
+            .scan(false) { isMemo, _ in
+                !isMemo
+            }
+            .startWith(false)
+
+        // MARK: - 테스팅 실패!! cursor - number 연결된 것으로
+        //         combineLatest와 zip을 사용하면 문제가 발생
+        //         "withLatestFrom"으로 변경하여 만들기
+
+        // MARK: - 해당 커서의 sudokuItem을 불러오기
+        let sudokuItemOfCursor = Observable
+            .combineLatest(sudoku, input.cellButtonTapped)
+            .map { sudoku, cursor in
+                return sudoku.item(of: cursor)
+            }
+
+        // MARK: - 해당 커서의 업데이트된 sudokuItem을 가져오기
+        let updatedSudokuItem = Observable.combineLatest(
+            sudokuItemOfCursor,
+            input.numberButtonTapped,
+            isMemo
+        )
+            .map { sudokuItem, number, isMemo in
+                if isMemo {
+                    print("메모 업데이트")
+                    return sudokuItem.updated(memo: number)
+                } else {
+                    print("숫자 업데이트")
+                    return sudokuItem.updated(number: number)
+                }
+            }
+
+        updatedSudokuItem
+            .subscribe { sudokuItem in
+                print("스도쿠 번호: \(sudokuItem.element?.number)")
+            }
+            .disposed(by: disposeBag)
+
+        // 변경점 끝!!
+
+
         let informationViewModelOutput = bindingInformationViewModel(timerTrigger: input.timerTrigger)
+        let boardViewModelOutput = bindingBoardViewModel(
+            cellButtonTapped: input.cellButtonTapped,
+            sudokuItem: updatedSudokuItem
+        )
 
         return Output(
             informationOutput: informationViewModelOutput,
+            boardOutput: boardViewModelOutput,
             sudoku: sudoku,
             loading: fetching.asDriver(onErrorJustReturn: false),
             alert: BehaviorSubject<AlertView.Alert>(value: .back)
@@ -109,5 +159,18 @@ final class GameViewModel: ViewModelType {
         )
 
         return informationViewModel.transform(input: input)
+    }
+
+    private func bindingBoardViewModel(
+        cellButtonTapped: Observable<IndexPath>,
+        sudokuItem: Observable<SudokuItem>
+    ) -> BoardViewModel.Output {
+        let input = BoardViewModel.Input(
+            sudoku: sudoku,
+            sudokuItem: sudokuItem,
+            cellButtonTapped: cellButtonTapped
+        )
+
+        return boardViewModel.transform(input: input)
     }
 }

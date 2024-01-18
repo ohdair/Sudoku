@@ -64,7 +64,10 @@ struct Sudoku: Codable {
     }
 
     func isMistake(indexPath: IndexPath) -> Bool {
-        return !mistake(indexPath: indexPath).isEmpty
+        let number = item(of: indexPath).number
+        let indexPaths = associatedIndexPaths(indexPath: indexPath)
+            .filter { number != 0 && item(of: $0).number == number }
+        return !indexPaths.isEmpty
     }
 
     func isProblem(indexPath: IndexPath) -> Bool {
@@ -84,20 +87,26 @@ struct Sudoku: Codable {
 extension Sudoku: IndexPathable {
     func mistake(indexPath: IndexPath) -> [IndexPath] {
         let number = item(of: indexPath).number
-
-        return associatedIndexPaths(indexPath: indexPath)
+        var indexPaths = associatedIndexPaths(indexPath: indexPath)
             .filter { number != 0 && item(of: $0).number == number }
+        indexPaths.append(indexPath)
+
+        return indexPaths
     }
 
     func associatedNumbers(indexPath: IndexPath) -> [IndexPath] {
         let number = item(of: indexPath).number
-        guard number != 0 else { return [] }
+        guard number != 0 else { return [indexPath] }
 
-        return board
+        var indexPaths = board
             .compactMapMatrix { row, column, element in
                 number == element.number ? self.indexPath(row: row, column: column) : nil
             }
             .flatMap { $0 }
+
+        indexPaths.append(indexPath)
+
+        return indexPaths
     }
 
     func associatedIndexPaths(indexPath: IndexPath) -> [IndexPath] {

@@ -37,7 +37,6 @@ final class InformationViewModel: ViewModelType {
 
     func transform(input: Input) -> Output {
         input.sudoku
-            .compactMap { $0 }
             .subscribe { sudoku in
                 let difficulty = sudoku.data.difficulty.discription
                 self.difficulty.accept(difficulty)

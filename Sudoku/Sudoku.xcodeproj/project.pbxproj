@@ -36,6 +36,7 @@
 		F63272612B1429DB00F16FA8 /* SectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63272602B1429DB00F16FA8 /* SectionView.swift */; };
 		F63272642B143B4000F16FA8 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63272632B143B4000F16FA8 /* BoardView.swift */; };
 		F681E8C52B182EE600DC34A3 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F681E8C42B182EE600DC34A3 /* LoadingIndicator.swift */; };
+		F687FFE92B54F93E0032178A /* BoardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F687FFE82B54F93E0032178A /* BoardViewModel.swift */; };
 		F689989F2B1ECD7E009AB0D2 /* InformationStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F689989E2B1ECD7E009AB0D2 /* InformationStackView.swift */; };
 		F68998A12B1ED248009AB0D2 /* AbilityStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68998A02B1ED248009AB0D2 /* AbilityStackView.swift */; };
 		F68998A32B1ED93E009AB0D2 /* NumberStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68998A22B1ED93E009AB0D2 /* NumberStackView.swift */; };
@@ -90,6 +91,7 @@
 		F63272602B1429DB00F16FA8 /* SectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionView.swift; sourceTree = "<group>"; };
 		F63272632B143B4000F16FA8 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 		F681E8C42B182EE600DC34A3 /* LoadingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingIndicator.swift; sourceTree = "<group>"; };
+		F687FFE82B54F93E0032178A /* BoardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewModel.swift; sourceTree = "<group>"; };
 		F689989E2B1ECD7E009AB0D2 /* InformationStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationStackView.swift; sourceTree = "<group>"; };
 		F68998A02B1ED248009AB0D2 /* AbilityStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbilityStackView.swift; sourceTree = "<group>"; };
 		F68998A22B1ED93E009AB0D2 /* NumberStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberStackView.swift; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 				F69755A12B45088F00EF8737 /* GameViewModel.swift */,
 				F6DF17ED2B2AD374008A28A6 /* InformationViewModel.swift */,
 				F627F4682B30804B007EFEC7 /* ViewModelType.swift */,
+				F687FFE82B54F93E0032178A /* BoardViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -338,6 +341,7 @@
 				F60B9D7E2B0DD2670036AA1B /* SudokuDataDTO.swift in Sources */,
 				F6BBA8EC2B37D16E0080D1E1 /* AlertButton.swift in Sources */,
 				F61F1CD22B25683200AADED8 /* AlertView.swift in Sources */,
+				F687FFE92B54F93E0032178A /* BoardViewModel.swift in Sources */,
 				F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */,
 				F60B9D742B0C9D740036AA1B /* AbilityButton.swift in Sources */,
 				F60BB9562B031F34005137FE /* GameButton.swift in Sources */,

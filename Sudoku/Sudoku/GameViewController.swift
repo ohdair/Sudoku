@@ -94,6 +94,7 @@ class GameViewController: UIViewController {
             }
             .disposed(by: disposeBag)
 
+        // MARK: - InformationView
         output.informationOutput.difficulty
             .drive(self.informationStackView.label(of: .difficulty).rx.text)
             .disposed(by: disposeBag)
@@ -108,45 +109,70 @@ class GameViewController: UIViewController {
             .drive(self.informationStackView.label(of: .timer).rx.text)
             .disposed(by: disposeBag)
 
+        // MARK: - BoardView
+//        output.boardOutput.cursor
+//            .drive { cursor in
+//                self.boardView.paint(to: cursor, into: .selected)
+//            }
+//            .disposed(by: disposeBag)
+
+        output.boardOutput.associatedIndexPaths
+            .subscribe { indexPaths in
+                self.boardView.paintedReset()
+                self.boardView.paint(to: indexPaths, into: .associatedCursor)
+            }
+            .disposed(by: disposeBag)
+
+        output.boardOutput.associatedNumbers
+            .subscribe { indexPaths in
+                self.boardView.paint(to: indexPaths, into: .associatedNumber)
+            }
+            .disposed(by: disposeBag)
+
+        output.boardOutput.isMistake
+            .filter { $0 }
+            .withLatestFrom(output.boardOutput.associatedMistake)
+            .subscribe { indexPaths in
+                self.boardView.paint(to: indexPaths, into: .mistake)
+            }
+            .disposed(by: disposeBag)
+
         viewDidLoad.onNext(())
     }
 
-    private func cellButtonTapped() -> Driver<IndexPath> {
+    private func cellButtonTapped() -> Observable<IndexPath> {
         let cellButtonDrivers = boardView.sections.flatMap { sectionView in
             sectionView.buttons.map { button in
                 let tapEvent = button.rx.tap
                 let driver = tapEvent
                     .map { button.indexPath }
-                    .asDriver(onErrorJustReturn: IndexPath())
                 return driver
             }
         }
 
-        return Driver.merge(cellButtonDrivers)
+        return Observable.merge(cellButtonDrivers)
     }
 
-    private func abilityButtonTapped() -> Driver<AbilityButton.Ability> {
+    private func abilityButtonTapped() -> Observable<AbilityButton.Ability> {
         let abilityButtonDrivers = abilityStackView.abilityButtons.map { button in
             let tapEvent = button.rx.tap
             let driver = tapEvent
                 .map { button.type }
-                .asDriver(onErrorJustReturn: .undo)
             return driver
         }
 
-        return Driver.merge(abilityButtonDrivers)
+        return Observable.merge(abilityButtonDrivers)
     }
 
-    private func numberButtonTapped() -> Driver<Int> {
+    private func numberButtonTapped() -> Observable<Int> {
         let numberButtonDrivers = numberStackView.numberButtons.map { button in
             let tapEvent = button.rx.tap
             let driver = tapEvent
                 .map { button.number }
-                .asDriver(onErrorJustReturn: 0)
             return driver
         }
 
-        return Driver.merge(numberButtonDrivers)
+        return Observable.merge(numberButtonDrivers)
     }
 
     func bindAlertViewModel() {
