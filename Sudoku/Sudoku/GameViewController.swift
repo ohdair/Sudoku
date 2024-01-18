@@ -77,10 +77,9 @@ class GameViewController: UIViewController {
 
         let output = gameViewModel.transform(input: input)
 
-        output.sudoku
-            .observe(on: MainScheduler.instance)
-            .subscribe { sudoku in
-                sudoku.board.forEachMatrix { row, column, sudokuItem in
+        output.boardOutput.board
+            .drive { board in
+                board.forEachMatrix { row, column, sudokuItem in
                     let indexPath = IndexPath(row: row, column: column)
                     let button = self.boardView.cellButton(of: indexPath)
                     button.update(to: sudokuItem)
@@ -140,39 +139,42 @@ class GameViewController: UIViewController {
         viewDidLoad.onNext(())
     }
 
-    private func cellButtonTapped() -> Observable<IndexPath> {
+    private func cellButtonTapped() -> Driver<IndexPath> {
         let cellButtonDrivers = boardView.sections.flatMap { sectionView in
             sectionView.buttons.map { button in
                 let tapEvent = button.rx.tap
                 let driver = tapEvent
                     .map { button.indexPath }
+                    .asDriver(onErrorJustReturn: IndexPath())
                 return driver
             }
         }
 
-        return Observable.merge(cellButtonDrivers)
+        return Driver.merge(cellButtonDrivers)
     }
 
-    private func abilityButtonTapped() -> Observable<AbilityButton.Ability> {
+    private func abilityButtonTapped() -> Driver<AbilityButton.Ability> {
         let abilityButtonDrivers = abilityStackView.abilityButtons.map { button in
             let tapEvent = button.rx.tap
             let driver = tapEvent
                 .map { button.type }
+                .asDriver(onErrorJustReturn: .erase)
             return driver
         }
 
-        return Observable.merge(abilityButtonDrivers)
+        return Driver.merge(abilityButtonDrivers)
     }
 
-    private func numberButtonTapped() -> Observable<Int> {
+    private func numberButtonTapped() -> Driver<Int> {
         let numberButtonDrivers = numberStackView.numberButtons.map { button in
             let tapEvent = button.rx.tap
             let driver = tapEvent
                 .map { button.number }
+                .asDriver(onErrorJustReturn: 0)
             return driver
         }
 
-        return Observable.merge(numberButtonDrivers)
+        return Driver.merge(numberButtonDrivers)
     }
 
     func bindAlertViewModel() {

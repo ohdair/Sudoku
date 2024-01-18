@@ -12,40 +12,85 @@ import RxCocoa
 final class BoardViewModel: ViewModelType {
 
     struct Input {
-        var sudoku: Observable<Sudoku>
-        var sudokuItem: Observable<SudokuItem>
-        var cellButtonTapped: Observable<IndexPath>
+        var board: Observable<[[SudokuItem]]>
+        var isOnMemo: Driver<Bool>
+        var cellButtonTapped: Driver<IndexPath>
+        var numberButtonTapped: Driver<Int>
     }
 
     struct Output {
+        var board: Driver<[[SudokuItem]]>
         var isMistake: Observable<Bool>
         var associatedMistake: Observable<[IndexPath]>
         var associatedIndexPaths: Observable<[IndexPath]>
         var associatedNumbers: Observable<[IndexPath]>
     }
 
+    private let board = BehaviorRelay<[[SudokuItem]]>(value: [])
+    private let cursor = BehaviorRelay<IndexPath?>(value: nil)
+    private let isOnMemo = BehaviorRelay<Bool>(value: false)
     private let disposeBag = DisposeBag()
 
     func transform(input: Input) -> Output {
-        let isMistake = isMistake(
-            cellButtonTapped: input.cellButtonTapped,
-            in: input.sudoku
-        )
+        input.board
+            .subscribe { board in
+                self.board.accept(board)
+            }
+            .disposed(by: disposeBag)
 
-        let associatedMistake = mistakeIndexPath(
-            cellButtonTapped: input.cellButtonTapped,
-            in: input.sudoku
-        )
+        input.cellButtonTapped
+            .drive { indexPath in
+                self.cursor.accept(indexPath)
+            }
+            .disposed(by: disposeBag)
 
-        let associatedIndexPaths = associatedIndexPaths(
-            of: input.cellButtonTapped,
-            in: input.sudoku
-        )
+        input.isOnMemo
+            .drive { isMemo in
+                self.isOnMemo.accept(isMemo)
+            }
+            .disposed(by: disposeBag)
 
-        let associatedNumbers = associatedNumbers(
-            of: input.cellButtonTapped,
-            in: input.sudoku
-        )
+        let sudokuItemDriver = cursor.asDriver()
+            .compactMap { $0 }
+            .withLatestFrom(board.asDriver()) { cursor, board in
+                board.sudokuItem(of: cursor)
+            }
+
+        input.numberButtonTapped
+            .withLatestFrom(sudokuItemDriver) { number, sudokuItem in
+                if self.isOnMemo.value {
+                    sudokuItem.updated(memo: number)
+                } else {
+                    sudokuItem.updated(number: number)
+                }
+            }
+            .drive { sudokuItem in
+                self.updateBoard(to: sudokuItem)
+            }
+            .disposed(by: disposeBag)
+
+
+
+//        let isMistake = isMistake(
+//            cellButtonTapped: input.cellButtonTapped,
+//            in: input.sudoku
+//        )
+//
+//        let associatedMistake = mistakeIndexPath(
+//            cellButtonTapped: input.cellButtonTapped,
+//            in: input.sudoku
+//        )
+//
+//        let associatedIndexPaths = associatedIndexPaths(
+//            of: input.cellButtonTapped,
+//            in: input.sudoku
+//        )
+//
+//        let associatedNumbers = associatedNumbers(
+//            of: input.cellButtonTapped,
+//            in: input.sudoku
+//        )
+
         // MARK: - sudokuItem 업데이트 되면 sudoku update
 //        Driver.combineLatest(input.cellButtonTapped, input.sudokuItem)
 //            .drive { cursor, sudokuItem in
@@ -65,29 +110,29 @@ final class BoardViewModel: ViewModelType {
          **/
 
         return Output(
-            isMistake: isMistake,
-            associatedMistake: associatedMistake,
-            associatedIndexPaths: associatedIndexPaths,
-            associatedNumbers: associatedNumbers
+            board: board.asDriver(),
+            isMistake: BehaviorSubject(value: false),
+            associatedMistake: BehaviorSubject(value: [IndexPath]()),
+            associatedIndexPaths: BehaviorSubject(value: [IndexPath]()),
+            associatedNumbers: BehaviorSubject(value: [IndexPath]())
+//            isMistake: isMistake,
+//            associatedMistake: associatedMistake,
+//            associatedIndexPaths: associatedIndexPaths,
+//            associatedNumbers: associatedNumbers
         )
     }
 
-    // MARK: - 임시로 지움, 필요할 시 다시 생성
-//    func updateSudoku(to sudoku: Observable<Sudoku>) {
-//        sudoku
-//            .subscribe { sudoku in
-//                self.sudoku.onNext(sudoku)
-//            }
-//            .disposed(by: disposeBag)
-//    }
-//
-//    func updateCursor(to cellButtonTapped: Driver<IndexPath>) {
-//        cellButtonTapped
-//            .drive { cursor in
-//                self.cursor.onNext(cursor)
-//            }
-//            .disposed(by: disposeBag)
-//    }
+    private func updateBoard(to sudokuItem: SudokuItem) {
+        guard let cursor = cursor.value else { return }
+        let row = cursor.row()
+        let column = cursor.column()
+
+        var board = board.value
+        board[row][column] = sudokuItem
+
+        self.board.accept(board)
+    }
+
     private func isMistake(
         cellButtonTapped: Observable<IndexPath>,
         in sudoku: Observable<Sudoku>

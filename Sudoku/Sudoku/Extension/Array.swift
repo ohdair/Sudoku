@@ -32,3 +32,12 @@ extension Array where Element: Collection {
         }
     }
 }
+
+extension Array where Element: Collection, Element.Index == Int, Element.Element == SudokuItem {
+    func sudokuItem(of indexPath: IndexPath) -> SudokuItem {
+        let row = indexPath.row()
+        let column = indexPath.column()
+
+        return self[row][column]
+    }
+}
