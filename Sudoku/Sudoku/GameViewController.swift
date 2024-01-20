@@ -109,29 +109,39 @@ class GameViewController: UIViewController {
             .disposed(by: disposeBag)
 
         // MARK: - BoardView
-//        output.boardOutput.cursor
-//            .drive { cursor in
-//                self.boardView.paint(to: cursor, into: .selected)
-//            }
-//            .disposed(by: disposeBag)
+        output.boardOutput.cursor
+            .drive { cursor in
+                self.boardView.paint(to: cursor, into: .selected)
+            }
+            .disposed(by: disposeBag)
 
         output.boardOutput.associatedIndexPaths
-            .subscribe { indexPaths in
+            .drive { indexPaths in
                 self.boardView.paintedReset()
                 self.boardView.paint(to: indexPaths, into: .associatedCursor)
             }
             .disposed(by: disposeBag)
 
         output.boardOutput.associatedNumbers
-            .subscribe { indexPaths in
+            .drive { indexPaths in
                 self.boardView.paint(to: indexPaths, into: .associatedNumber)
             }
             .disposed(by: disposeBag)
 
         output.boardOutput.isMistake
-            .filter { $0 }
-            .withLatestFrom(output.boardOutput.associatedMistake)
-            .subscribe { indexPaths in
+            .withLatestFrom(output.boardOutput.cursor) { isMistake, cursor in
+                var state: CellButton.State
+                state = isMistake ? .mistake : .selected
+
+                return (cursor, state)
+            }
+            .drive { cursor, state in
+                self.boardView.paintText(to: cursor, into: state)
+            }
+            .disposed(by: disposeBag)
+
+        output.boardOutput.associatedMistake
+            .drive { indexPaths in
                 self.boardView.paint(to: indexPaths, into: .mistake)
             }
             .disposed(by: disposeBag)

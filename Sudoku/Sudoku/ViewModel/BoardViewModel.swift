@@ -20,10 +20,11 @@ final class BoardViewModel: ViewModelType {
 
     struct Output {
         var board: Driver<[[SudokuItem]]>
-        var isMistake: Observable<Bool>
-        var associatedMistake: Observable<[IndexPath]>
-        var associatedIndexPaths: Observable<[IndexPath]>
-        var associatedNumbers: Observable<[IndexPath]>
+        var isMistake: Driver<Bool>
+        var cursor: Driver<IndexPath>
+        var associatedMistake: Driver<[IndexPath]>
+        var associatedIndexPaths: Driver<[IndexPath]>
+        var associatedNumbers: Driver<[IndexPath]>
     }
 
     private let board = BehaviorRelay<[[SudokuItem]]>(value: [])
@@ -50,129 +51,132 @@ final class BoardViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
 
-        let sudokuItemDriver = cursor.asDriver()
+        let itemOfCursorDriver = item(of: input.cellButtonTapped)
+        let updatedMemo = updatedMemo(to: itemOfCursorDriver, into: input.numberButtonTapped)
+        let updatedNumber = updatedNumber(to: itemOfCursorDriver, into: input.numberButtonTapped)
+
+        Driver.merge(updatedMemo, updatedNumber)
+            .withLatestFrom(input.cellButtonTapped) { sudokuItem, cursor in
+                self.updatedBoard(to: sudokuItem, of: cursor)
+            }
+            .drive { updatedBoard in
+                self.board.accept(updatedBoard)
+            }
+            .disposed(by: disposeBag)
+
+        // MARK: - cursor의 숫자가 업데이트되면(메모 X) 해당 커서와 관련된 칠하는 Driver 생성
+        let paintTrigger = Driver.merge(itemOfCursorDriver, updatedNumber)
+
+        let associatedIndexPaths = paintTrigger
+            .withLatestFrom(self.cursor.asDriver())
+            .compactMap { $0 }
+            .map { cursor in
+                self.associatedIndexPaths(indexPath: cursor)
+            }
+
+        let associatedMistake = paintTrigger
+            .withLatestFrom(associatedIndexPaths) { item, indexPaths in
+                self.associatedMistake(indexPaths: indexPaths, with: item.number)
+            }
+
+        let isMistake = associatedMistake.map { !$0.isEmpty }
+
+        let associatedNumbers = paintTrigger
+            .withLatestFrom(self.board.asDriver()) { item, board in
+                self.associatedNumbers(board: board, with: item.number)
+            }
+
+        return Output(
+            board: board.asDriver(),
+            isMistake: isMistake,
+            cursor: input.cellButtonTapped,
+            associatedMistake: associatedMistake,
+            associatedIndexPaths: associatedIndexPaths,
+            associatedNumbers: associatedNumbers
+        )
+    }
+
+    private func item(of indexPath: Driver<IndexPath>) -> Driver<SudokuItem> {
+        return indexPath
             .compactMap { $0 }
             .withLatestFrom(board.asDriver()) { cursor, board in
                 board.sudokuItem(of: cursor)
             }
-
-        input.numberButtonTapped
-            .withLatestFrom(sudokuItemDriver) { number, sudokuItem in
-                if self.isOnMemo.value {
-                    sudokuItem.updated(memo: number)
-                } else {
-                    sudokuItem.updated(number: number)
-                }
-            }
-            .drive { sudokuItem in
-                self.updateBoard(to: sudokuItem)
-            }
-            .disposed(by: disposeBag)
-
-
-
-//        let isMistake = isMistake(
-//            cellButtonTapped: input.cellButtonTapped,
-//            in: input.sudoku
-//        )
-//
-//        let associatedMistake = mistakeIndexPath(
-//            cellButtonTapped: input.cellButtonTapped,
-//            in: input.sudoku
-//        )
-//
-//        let associatedIndexPaths = associatedIndexPaths(
-//            of: input.cellButtonTapped,
-//            in: input.sudoku
-//        )
-//
-//        let associatedNumbers = associatedNumbers(
-//            of: input.cellButtonTapped,
-//            in: input.sudoku
-//        )
-
-        // MARK: - sudokuItem 업데이트 되면 sudoku update
-//        Driver.combineLatest(input.cellButtonTapped, input.sudokuItem)
-//            .drive { cursor, sudokuItem in
-//                suoku.
-//
-//            }
-
-        /**
-         1. 셀 버튼 클릭
-         2. 커서 업데이트
-         3. 관련 셀 버튼 paint
-            3 - 1. 커서 셀 버튼
-            3 - 2. 세로, 가로, 구역 셀 버튼
-         4. isMistake? (커서의 번호와 관련 셀 버튼의 번호가 있는 지 확인)
-            4 - Y. 관련 mistake 셀 버튼 paint
-            4 - N. 동작 하지 않음
-         **/
-
-        return Output(
-            board: board.asDriver(),
-            isMistake: BehaviorSubject(value: false),
-            associatedMistake: BehaviorSubject(value: [IndexPath]()),
-            associatedIndexPaths: BehaviorSubject(value: [IndexPath]()),
-            associatedNumbers: BehaviorSubject(value: [IndexPath]())
-//            isMistake: isMistake,
-//            associatedMistake: associatedMistake,
-//            associatedIndexPaths: associatedIndexPaths,
-//            associatedNumbers: associatedNumbers
-        )
     }
 
-    private func updateBoard(to sudokuItem: SudokuItem) {
-        guard let cursor = cursor.value else { return }
+    private func updatedMemo(to item: Driver<SudokuItem>, into number: Driver<Int>) -> Driver<SudokuItem> {
+        number
+            .filter { _ in self.isOnMemo.value }
+            .withLatestFrom(item) { number, sudokuItem in
+                sudokuItem.updated(memo: number)
+            }
+    }
+
+    private func updatedNumber(to item: Driver<SudokuItem>, into number: Driver<Int>) -> Driver<SudokuItem> {
+        number
+            .filter { _ in !self.isOnMemo.value }
+            .withLatestFrom(item) { number, SudokuItem in
+                SudokuItem.updated(number: number)
+            }
+    }
+
+    private func updatedBoard(to sudokuItem: SudokuItem, of cursor: IndexPath) -> [[SudokuItem]] {
         let row = cursor.row()
         let column = cursor.column()
 
         var board = board.value
         board[row][column] = sudokuItem
 
-        self.board.accept(board)
+        return board
     }
 
-    private func isMistake(
-        cellButtonTapped: Observable<IndexPath>,
-        in sudoku: Observable<Sudoku>
-    ) -> Observable<Bool> {
-        Observable.combineLatest(sudoku, cellButtonTapped)
-            .map { sudoku, cursor in
-                sudoku.isMistake(indexPath: cursor)
-            }
+    private func associatedMistake(indexPaths: [IndexPath], with number: Int) -> [IndexPath] {
+        indexPaths.filter { indexPath in
+            let item = board.value.sudokuItem(of: indexPath)
+            let numberOfItem = item.number
+
+            return numberOfItem != 0 && numberOfItem == number
+        }
     }
 
-    private func mistakeIndexPath(
-        cellButtonTapped: Observable<IndexPath>,
-        in sudoku: Observable<Sudoku>
-    ) -> Observable<[IndexPath]> {
-        Observable.combineLatest(sudoku, cellButtonTapped)
-            .filter { sudoku, cursor in
-                sudoku.isMistake(indexPath: cursor)
-            }
-            .map { sudoku, cursor in
-                sudoku.mistake(indexPath: cursor)
-            }
+    private func associatedNumbers(board: [[SudokuItem]], with number: Int) -> [IndexPath] {
+        board.compactMapMatrix { row, column, item in
+            guard number != 0 && item.number == number else { return nil }
+
+            return self.indexPath(row: row, column: column)
+        }
+        .flatMap { $0 }
+    }
+}
+
+extension BoardViewModel: IndexPathable {
+    fileprivate func associatedIndexPaths(indexPath: IndexPath) -> [IndexPath] {
+        let row = associatedRow(indexPath: indexPath)
+        let column = associatedColumn(indexPath: indexPath)
+        let section = associatedSection(indexPath: indexPath)
+
+        return row + column + section
     }
 
-    private func associatedIndexPaths(
-        of cellButtonTapped: Observable<IndexPath>,
-        in sudoku: Observable<Sudoku>
-    ) -> Observable<[IndexPath]> {
-        Observable.combineLatest(sudoku, cellButtonTapped)
-            .map { sudoku, cursor in
-                sudoku.associatedIndexPaths(indexPath: cursor)
-            }
+    private func associatedRow(indexPath: IndexPath) -> [IndexPath] {
+        let row = indexPath.row()
+
+        return stride(from: 0, to: 9, by: 1)
+            .map { self.indexPath(row: row, column: $0) }
+            .filter { $0 != indexPath }
     }
 
-    private func associatedNumbers(
-        of cellButtonTapped: Observable<IndexPath>,
-        in sudoku: Observable<Sudoku>
-    ) -> Observable<[IndexPath]> {
-        Observable.combineLatest(sudoku, cellButtonTapped)
-            .map { sudoku, cursor in
-                sudoku.associatedNumbers(indexPath: cursor)
-            }
+    private func associatedColumn(indexPath: IndexPath) -> [IndexPath] {
+        let column = indexPath.column()
+
+        return stride(from: 0, to: 9, by: 1)
+            .map { self.indexPath(row: $0, column: column) }
+            .filter { $0 != indexPath }
+    }
+
+    private func associatedSection(indexPath: IndexPath) -> [IndexPath] {
+        return stride(from: 0, to: 9, by: 1)
+            .map { IndexPath(item: $0, section: indexPath.section) }
+            .filter { $0 != indexPath }
     }
 }
