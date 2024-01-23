@@ -34,118 +34,117 @@ final class BoardViewModel: ViewModelType {
     private let cursor = BehaviorRelay<IndexPath>(value: IndexPath())
     private let cursorState = BehaviorRelay<CellButton.State>(value: .problem)
     private let isOnMemo = BehaviorRelay<Bool>(value: false)
+
+    private let associatedIndexPaths = BehaviorRelay<[IndexPath]>(value: [])
+    private let associatedNumbers = BehaviorRelay<[IndexPath]>(value: [])
+
     private let disposeBag = DisposeBag()
 
     func transform(input: Input) -> Output {
+        bind(to: input)
+
+        input.numberButtonTapped
+            .filter { _ in self.isProblemCursor() == false }
+            .filter { _ in self.isOnMemo.value }
+            .map { self.updatedMemoOfCursor(to: $0) }
+            .map { self.updatedBoard(to: $0, of: self.cursor.value) }
+            .drive(board)
+            .disposed(by: disposeBag)
+
+        let updatedNumber = input.numberButtonTapped
+            .filter { _ in self.isProblemCursor() == false }
+            .filter { _ in !self.isOnMemo.value }
+            .map { self.updatedNumberOfCursor(to: $0) }
+
+        updatedNumber
+            .map { self.updatedBoard(to: $0, of: self.cursor.value) }
+            .drive(board)
+            .disposed(by: disposeBag)
+
+        // MARK: - cursor의 숫자가 업데이트되면(메모 X) 해당 커서와 관련된 칠하는 Driver 생성
+
+        let paintTrigger = Driver.merge(
+            input.cellButtonTapped,
+            updatedNumber.withLatestFrom(
+                self.cursor.asDriver()
+            )
+        )
+
+        paintTrigger
+            .drive { cursor in
+                self.cursor.accept(cursor)
+                self.acceptAssociatedIndexPaths(with: cursor)
+                self.acceptAssociatedNumbers(with: cursor)
+            }
+            .disposed(by: disposeBag)
+
+        let associatedMistake = paintTrigger
+            .map { _ in self.associatedMistake() }
+
+        associatedMistake
+            .map { !$0.isEmpty }
+            .map { isMistake in
+                var state: CellButton.State
+
+                if self.isProblemCursor() {
+                    state = .problem
+                } else if isMistake {
+                    state = .mistake
+                } else {
+                    state = .selected
+                }
+
+                return state
+            }
+            .drive(cursorState)
+            .disposed(by: disposeBag)
+
+        return Output(
+            board: board.asDriver(),
+            cursor: cursor.asDriver().skip(1),
+            cursorState: cursorState.asDriver(),
+            associatedMistake: associatedMistake,
+            associatedIndexPaths: associatedIndexPaths.asDriver(),
+            associatedNumbers: associatedNumbers.asDriver()
+        )
+    }
+
+    private func bind(to input: Input) {
         input.data
             .map { $0.problem }
-            .subscribe { problem in
-                self.problem.accept(problem)
-            }
+            .bind(to: problem)
             .disposed(by: disposeBag)
 
         input.data
             .map { $0.solution }
-            .subscribe { solution in
-                self.solution.accept(solution)
-            }
+            .bind(to: solution)
             .disposed(by: disposeBag)
 
         input.board
-            .subscribe { board in
-                self.board.accept(board)
-            }
+            .bind(to: board)
             .disposed(by: disposeBag)
 
         input.cellButtonTapped
-            .drive { indexPath in
-                self.cursor.accept(indexPath)
-            }
+            .drive(cursor)
             .disposed(by: disposeBag)
 
         input.isOnMemo
-            .drive { isMemo in
-                self.isOnMemo.accept(isMemo)
-            }
+            .drive(isOnMemo)
             .disposed(by: disposeBag)
-
-        let itemOfCursor = item(of: input.cellButtonTapped)
-        let changableItem = itemOfCursor
-            .filter { _ in !self.isProblemCursor() }
-
-        let updatedMemo = updatedMemo(to: changableItem, into: input.numberButtonTapped)
-        let updatedNumber = updatedNumber(to: changableItem, into: input.numberButtonTapped)
-
-        Driver.merge(updatedMemo, updatedNumber)
-            .withLatestFrom(input.cellButtonTapped) { sudokuItem, cursor in
-                self.updatedBoard(to: sudokuItem, of: cursor)
-            }
-            .drive { updatedBoard in
-                self.board.accept(updatedBoard)
-            }
-            .disposed(by: disposeBag)
-
-        // MARK: - cursor의 숫자가 업데이트되면(메모 X) 해당 커서와 관련된 칠하는 Driver 생성
-        let paintTrigger = Driver.merge(itemOfCursor, updatedNumber)
-
-        let associatedIndexPaths = paintTrigger
-            .withLatestFrom(self.cursor.asDriver())
-            .map { cursor in
-                self.associatedIndexPaths(indexPath: cursor)
-            }
-
-        let associatedMistake = paintTrigger
-            .withLatestFrom(associatedIndexPaths) { item, indexPaths in
-                self.associatedMistake(indexPaths: indexPaths, with: item.number)
-            }
-
-        let isMistake = associatedMistake
-            .map { !$0.isEmpty }
-
-        isMistake
-            .drive { isMistake in
-                let state: CellButton.State = isMistake ? .mistake : .selected
-                self.cursorState.accept(state)
-            }
-            .disposed(by: disposeBag)
-
-        let associatedNumbers = paintTrigger
-            .withLatestFrom(self.board.asDriver()) { item, board in
-                self.associatedNumbers(board: board, with: item.number)
-            }
-
-        return Output(
-            board: board.asDriver(),
-            cursor: input.cellButtonTapped,
-            cursorState: cursorState.asDriver(),
-            associatedMistake: associatedMistake,
-            associatedIndexPaths: associatedIndexPaths,
-            associatedNumbers: associatedNumbers
-        )
     }
 
-    private func item(of indexPath: Driver<IndexPath>) -> Driver<SudokuItem> {
-        return indexPath
-            .compactMap { $0 }
-            .withLatestFrom(board.asDriver()) { cursor, board in
-                board.sudokuItem(of: cursor)
-            }
+    private func updatedMemoOfCursor(to number: Int) -> SudokuItem {
+        let cursor = self.cursor.value
+        let item = self.board.value.sudokuItem(of: cursor)
+
+        return item.updated(memo: number)
     }
 
-    private func updatedMemo(to item: Driver<SudokuItem>, into number: Driver<Int>) -> Driver<SudokuItem> {
-        number
-            .filter { _ in self.isOnMemo.value }
-            .withLatestFrom(item) { number, sudokuItem in
-                sudokuItem.updated(memo: number)
-            }
-    }
+    private func updatedNumberOfCursor(to number: Int) -> SudokuItem {
+        let cursor = self.cursor.value
+        let item = self.board.value.sudokuItem(of: cursor)
 
-    private func updatedNumber(to item: Driver<SudokuItem>, into number: Driver<Int>) -> Driver<SudokuItem> {
-        number
-            .filter { _ in !self.isOnMemo.value }
-            .withLatestFrom(item) { number, SudokuItem in
-                SudokuItem.updated(number: number)
-            }
+        return item.updated(number: number)
     }
 
     private func updatedBoard(to sudokuItem: SudokuItem, of cursor: IndexPath) -> [[SudokuItem]] {
@@ -158,22 +157,34 @@ final class BoardViewModel: ViewModelType {
         return board
     }
 
-    private func associatedMistake(indexPaths: [IndexPath], with number: Int) -> [IndexPath] {
-        indexPaths.filter { indexPath in
+    private func associatedMistake() -> [IndexPath] {
+        let indexPaths = associatedIndexPaths.value
+        let cursor = cursor.value
+        let numberOfCursor = board.value.sudokuItem(of: cursor).number
+
+        return indexPaths.filter { indexPath in
             let item = board.value.sudokuItem(of: indexPath)
             let numberOfItem = item.number
 
-            return numberOfItem != 0 && numberOfItem == number
+            return numberOfItem != 0 && numberOfItem == numberOfCursor
         }
     }
 
-    private func associatedNumbers(board: [[SudokuItem]], with number: Int) -> [IndexPath] {
-        board.compactMapMatrix { row, column, item in
-            guard number != 0 && item.number == number else { return nil }
+    private func acceptAssociatedNumbers(with cursor: IndexPath) {
+        let board = board.value
+        let numberOfCursor = board.sudokuItem(of: cursor).number
+        let indexPaths: [IndexPath] = board
+            .compactMapMatrix { row, column, item in
+                guard numberOfCursor != 0 && numberOfCursor == item.number else {
+                    return nil
+                }
 
-            return self.indexPath(row: row, column: column)
-        }
-        .flatMap { $0 }
+                return self.indexPath(row: row, column: column)
+            }
+            .flatMap { $0 }
+            .filter { $0 != cursor }
+
+        self.associatedNumbers.accept(indexPaths)
     }
 
     private func isProblemCursor() -> Bool {
@@ -194,15 +205,16 @@ final class BoardViewModel: ViewModelType {
 }
 
 extension BoardViewModel: IndexPathable {
-    fileprivate func associatedIndexPaths(indexPath: IndexPath) -> [IndexPath] {
-        let row = associatedRow(indexPath: indexPath)
-        let column = associatedColumn(indexPath: indexPath)
-        let section = associatedSection(indexPath: indexPath)
+    fileprivate func acceptAssociatedIndexPaths(with indexPath: IndexPath) {
+        let row = associatedRow(with: indexPath)
+        let column = associatedColumn(with: indexPath)
+        let section = associatedSection(with: indexPath)
+        let indexPaths = row + column + section
 
-        return row + column + section
+        self.associatedIndexPaths.accept(indexPaths)
     }
 
-    private func associatedRow(indexPath: IndexPath) -> [IndexPath] {
+    private func associatedRow(with indexPath: IndexPath) -> [IndexPath] {
         let row = indexPath.row()
 
         return stride(from: 0, to: 9, by: 1)
@@ -210,7 +222,7 @@ extension BoardViewModel: IndexPathable {
             .filter { $0 != indexPath }
     }
 
-    private func associatedColumn(indexPath: IndexPath) -> [IndexPath] {
+    private func associatedColumn(with indexPath: IndexPath) -> [IndexPath] {
         let column = indexPath.column()
 
         return stride(from: 0, to: 9, by: 1)
@@ -218,7 +230,7 @@ extension BoardViewModel: IndexPathable {
             .filter { $0 != indexPath }
     }
 
-    private func associatedSection(indexPath: IndexPath) -> [IndexPath] {
+    private func associatedSection(with indexPath: IndexPath) -> [IndexPath] {
         return stride(from: 0, to: 9, by: 1)
             .map { IndexPath(item: $0, section: indexPath.section) }
             .filter { $0 != indexPath }

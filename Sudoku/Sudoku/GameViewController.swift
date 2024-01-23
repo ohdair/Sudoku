@@ -111,13 +111,13 @@ class GameViewController: UIViewController {
         // MARK: - BoardView
         output.boardOutput.cursor
             .drive { cursor in
+                self.boardView.paintedReset()
                 self.boardView.paint(to: cursor, into: .selected)
             }
             .disposed(by: disposeBag)
 
         output.boardOutput.associatedIndexPaths
             .drive { indexPaths in
-                self.boardView.paintedReset()
                 self.boardView.paint(to: indexPaths, into: .associatedCursor)
             }
             .disposed(by: disposeBag)
