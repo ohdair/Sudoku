@@ -12,6 +12,7 @@ import RxCocoa
 final class BoardViewModel: ViewModelType {
 
     struct Input {
+        var data: Observable<SudokuData>
         var board: Observable<[[SudokuItem]]>
         var isOnMemo: Driver<Bool>
         var cellButtonTapped: Driver<IndexPath>
@@ -20,19 +21,36 @@ final class BoardViewModel: ViewModelType {
 
     struct Output {
         var board: Driver<[[SudokuItem]]>
-        var isMistake: Driver<Bool>
         var cursor: Driver<IndexPath>
+        var cursorState: Driver<CellButton.State>
         var associatedMistake: Driver<[IndexPath]>
         var associatedIndexPaths: Driver<[IndexPath]>
         var associatedNumbers: Driver<[IndexPath]>
     }
 
+    private let problem = BehaviorRelay<[[Int]]>(value: [])
+    private let solution = BehaviorRelay<[[Int]]>(value: [])
     private let board = BehaviorRelay<[[SudokuItem]]>(value: [])
-    private let cursor = BehaviorRelay<IndexPath?>(value: nil)
+    private let cursor = BehaviorRelay<IndexPath>(value: IndexPath())
+    private let cursorState = BehaviorRelay<CellButton.State>(value: .problem)
     private let isOnMemo = BehaviorRelay<Bool>(value: false)
     private let disposeBag = DisposeBag()
 
     func transform(input: Input) -> Output {
+        input.data
+            .map { $0.problem }
+            .subscribe { problem in
+                self.problem.accept(problem)
+            }
+            .disposed(by: disposeBag)
+
+        input.data
+            .map { $0.solution }
+            .subscribe { solution in
+                self.solution.accept(solution)
+            }
+            .disposed(by: disposeBag)
+
         input.board
             .subscribe { board in
                 self.board.accept(board)
@@ -51,9 +69,12 @@ final class BoardViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
 
-        let itemOfCursorDriver = item(of: input.cellButtonTapped)
-        let updatedMemo = updatedMemo(to: itemOfCursorDriver, into: input.numberButtonTapped)
-        let updatedNumber = updatedNumber(to: itemOfCursorDriver, into: input.numberButtonTapped)
+        let itemOfCursor = item(of: input.cellButtonTapped)
+        let changableItem = itemOfCursor
+            .filter { _ in !self.isProblemCursor() }
+
+        let updatedMemo = updatedMemo(to: changableItem, into: input.numberButtonTapped)
+        let updatedNumber = updatedNumber(to: changableItem, into: input.numberButtonTapped)
 
         Driver.merge(updatedMemo, updatedNumber)
             .withLatestFrom(input.cellButtonTapped) { sudokuItem, cursor in
@@ -65,11 +86,10 @@ final class BoardViewModel: ViewModelType {
             .disposed(by: disposeBag)
 
         // MARK: - cursor의 숫자가 업데이트되면(메모 X) 해당 커서와 관련된 칠하는 Driver 생성
-        let paintTrigger = Driver.merge(itemOfCursorDriver, updatedNumber)
+        let paintTrigger = Driver.merge(itemOfCursor, updatedNumber)
 
         let associatedIndexPaths = paintTrigger
             .withLatestFrom(self.cursor.asDriver())
-            .compactMap { $0 }
             .map { cursor in
                 self.associatedIndexPaths(indexPath: cursor)
             }
@@ -79,7 +99,15 @@ final class BoardViewModel: ViewModelType {
                 self.associatedMistake(indexPaths: indexPaths, with: item.number)
             }
 
-        let isMistake = associatedMistake.map { !$0.isEmpty }
+        let isMistake = associatedMistake
+            .map { !$0.isEmpty }
+
+        isMistake
+            .drive { isMistake in
+                let state: CellButton.State = isMistake ? .mistake : .selected
+                self.cursorState.accept(state)
+            }
+            .disposed(by: disposeBag)
 
         let associatedNumbers = paintTrigger
             .withLatestFrom(self.board.asDriver()) { item, board in
@@ -88,8 +116,8 @@ final class BoardViewModel: ViewModelType {
 
         return Output(
             board: board.asDriver(),
-            isMistake: isMistake,
             cursor: input.cellButtonTapped,
+            cursorState: cursorState.asDriver(),
             associatedMistake: associatedMistake,
             associatedIndexPaths: associatedIndexPaths,
             associatedNumbers: associatedNumbers
@@ -146,6 +174,22 @@ final class BoardViewModel: ViewModelType {
             return self.indexPath(row: row, column: column)
         }
         .flatMap { $0 }
+    }
+
+    private func isProblemCursor() -> Bool {
+        let cursor = cursor.value
+        let row = cursor.row()
+        let column = cursor.column()
+        var isProblem: Bool
+        
+        if problem.value[row][column] == 0 {
+            isProblem = false
+        } else {
+            isProblem = true
+            self.cursorState.accept(.problem)
+        }
+
+        return isProblem
     }
 }
 

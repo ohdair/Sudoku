@@ -128,8 +128,10 @@ final class GameViewModel: ViewModelType {
         cellButtonTapped: Driver<IndexPath>,
         numberButtonTapped: Driver<Int>
     ) -> BoardViewModel.Output {
+        let observableData = sudoku.map { $0.data }
         let observableBoard = sudoku.map { $0.board }
         let input = BoardViewModel.Input(
+            data: observableData,
             board: observableBoard,
             isOnMemo: isOnMemo.asDriver(),
             cellButtonTapped: cellButtonTapped,

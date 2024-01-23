@@ -128,11 +128,8 @@ class GameViewController: UIViewController {
             }
             .disposed(by: disposeBag)
 
-        output.boardOutput.isMistake
-            .withLatestFrom(output.boardOutput.cursor) { isMistake, cursor in
-                var state: CellButton.State
-                state = isMistake ? .mistake : .selected
-
+        output.boardOutput.cursorState
+            .withLatestFrom(output.boardOutput.cursor) { state, cursor in
                 return (cursor, state)
             }
             .drive { cursor, state in
