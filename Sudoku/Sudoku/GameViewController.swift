@@ -161,10 +161,11 @@ class GameViewController: UIViewController {
     }
 
     private func abilityButtonTapped() -> Driver<AbilityButton.Ability> {
-        let abilityButtonDrivers = abilityStackView.abilityButtons.map { button in
-            let tapEvent = button.rx.tap
+        let abilityButtonDrivers = abilityStackView.subviews.map { subview in
+            let abilityButton = subview as! AbilityButton
+            let tapEvent = abilityButton.rx.tap
             let driver = tapEvent
-                .map { button.type }
+                .map { abilityButton.type }
                 .asDriver(onErrorJustReturn: .erase)
             return driver
         }

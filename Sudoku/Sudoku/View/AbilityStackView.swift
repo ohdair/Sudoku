@@ -9,7 +9,9 @@ import UIKit
 
 class AbilityStackView: UIStackView {
 
-    private(set) var abilityButtons = [AbilityButton]()
+    private let undoButton = AbilityButton(of: .undo)
+    private let eraseButton = AbilityButton(of: .erase)
+    private let memoButton = AbilityButton(of: .memo)
 
     override init(frame: CGRect) {
         super.init(frame: .zero)
@@ -22,11 +24,9 @@ class AbilityStackView: UIStackView {
     }
 
     private func setUI() {
-        AbilityButton.Ability.allCases.forEach { ability in
-            let button = AbilityButton(of: ability)
-            abilityButtons.append(button)
-            addArrangedSubview(button)
-        }
+        addArrangedSubview(undoButton)
+        addArrangedSubview(eraseButton)
+        addArrangedSubview(memoButton)
 
         distribution = .equalCentering
     }
@@ -36,6 +36,17 @@ class AbilityStackView: UIStackView {
             (view as! AbilityButton).type == ability
         }.forEach { view in
             (view as! AbilityButton).addTarget(target, action: selector, for: .touchDown)
+        }
+    }
+
+    func button(of ability: AbilityButton.Ability) -> AbilityButton {
+        switch ability {
+        case .undo:
+            return undoButton
+        case .erase:
+            return eraseButton
+        case .memo:
+            return memoButton
         }
     }
 }
