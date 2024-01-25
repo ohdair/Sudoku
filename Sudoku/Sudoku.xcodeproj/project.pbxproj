@@ -27,6 +27,7 @@
 		F60BB94D2B031BDA005137FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F60BB94B2B031BDA005137FE /* LaunchScreen.storyboard */; };
 		F60BB9562B031F34005137FE /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9552B031F34005137FE /* GameButton.swift */; };
 		F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9582B0321D6005137FE /* TimeInterval.swift */; };
+		F61BFD032B624E660052D077 /* AbilityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61BFD022B624E660052D077 /* AbilityViewModel.swift */; };
 		F61F1CD22B25683200AADED8 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61F1CD12B25683200AADED8 /* AlertView.swift */; };
 		F627F4692B30804B007EFEC7 /* ViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F627F4682B30804B007EFEC7 /* ViewModelType.swift */; };
 		F627F46B2B308345007EFEC7 /* Information.swift in Sources */ = {isa = PBXBuildFile; fileRef = F627F46A2B308345007EFEC7 /* Information.swift */; };
@@ -82,6 +83,7 @@
 		F60BB94E2B031BDA005137FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F60BB9552B031F34005137FE /* GameButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButton.swift; sourceTree = "<group>"; };
 		F60BB9582B0321D6005137FE /* TimeInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
+		F61BFD022B624E660052D077 /* AbilityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbilityViewModel.swift; sourceTree = "<group>"; };
 		F61F1CD12B25683200AADED8 /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		F627F4682B30804B007EFEC7 /* ViewModelType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelType.swift; sourceTree = "<group>"; };
 		F627F46A2B308345007EFEC7 /* Information.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Information.swift; sourceTree = "<group>"; };
@@ -235,6 +237,7 @@
 				F6DF17ED2B2AD374008A28A6 /* InformationViewModel.swift */,
 				F627F4682B30804B007EFEC7 /* ViewModelType.swift */,
 				F687FFE82B54F93E0032178A /* BoardViewModel.swift */,
+				F61BFD022B624E660052D077 /* AbilityViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -325,6 +328,7 @@
 				F63272642B143B4000F16FA8 /* BoardView.swift in Sources */,
 				F68998A72B1EFC45009AB0D2 /* IndexPath.swift in Sources */,
 				F689989F2B1ECD7E009AB0D2 /* InformationStackView.swift in Sources */,
+				F61BFD032B624E660052D077 /* AbilityViewModel.swift in Sources */,
 				F627F46B2B308345007EFEC7 /* Information.swift in Sources */,
 				F60B9D702B0B04CC0036AA1B /* GameViewController.swift in Sources */,
 				F6EF981F2B15C520005FEA99 /* Sudoku.swift in Sources */,
