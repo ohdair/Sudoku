@@ -33,13 +33,20 @@ final class GameViewModel: ViewModelType {
     private let mistakeTrigger = PublishSubject<Void>()
     private let fetching = PublishSubject<Bool>()
     private let disposeBag = DisposeBag()
-    private let informationViewModel = InformationViewModel()
-
     private let board = BehaviorRelay<[[SudokuItem]]>(value: [])
-    private let isOnMemo = BehaviorRelay<Bool>(value: false)
-    private let boardViewModel = BoardViewModel()
 
     private var savedSudoku: Sudoku?
+
+    // ViewModel
+    private let informationViewModel = InformationViewModel()
+    private let boardViewModel = BoardViewModel()
+    private let abilityViewModel = AbilityViewModel()
+
+    // State
+    private let isOnMemo = BehaviorRelay<Bool>(value: false)
+
+    // Action
+    private let eraseTrigger = PublishSubject<Void>()
 
     init(sudoku: Sudoku) {
         self.savedSudoku = sudoku
@@ -100,6 +107,8 @@ final class GameViewModel: ViewModelType {
             numberButtonTapped: input.numberButtonTapped
         )
 
+        bindingAbilityViewModel(ability: input.abilityButtonTapped)
+
         return Output(
             informationOutput: informationViewModelOutput,
             boardOutput: boardViewModelOutput,
@@ -139,5 +148,26 @@ final class GameViewModel: ViewModelType {
         )
 
         return boardViewModel.transform(input: input)
+    }
+
+    private func bindingAbilityViewModel(ability: Driver<AbilityButton.Ability>) {
+        let input = AbilityViewModel.Input(
+            board: board.asObservable(),
+            ability: ability
+        )
+
+        let output = abilityViewModel.transform(input: input)
+
+        output.board
+            .drive(board)
+            .disposed(by: disposeBag)
+
+        output.eraseTrigger
+            .drive(eraseTrigger)
+            .disposed(by: disposeBag)
+
+        output.isOnMemo
+            .drive(isOnMemo)
+            .disposed(by: disposeBag)
     }
 }

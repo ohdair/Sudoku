@@ -10,8 +10,11 @@ import RxSwift
 import RxCocoa
 
 /// 각 기능별 동작을 처리하며, 변경된 board를 history에 저장하는 역할
+///
 /// undo : 이전 history로 업데이트하여 output에 변경된 board를 emit
+///
 /// erase : 입력받은 이벤트를 Trigger로 변경, 커서에 따른 동작으로 BoardViewModel에서 처리
+///
 /// memo : 입력받은 이벤트를 Boolean으로 변경, memo의 on/off를 나타냄
 final class AbilityViewModel: ViewModelType {
 
@@ -61,7 +64,12 @@ final class AbilityViewModel: ViewModelType {
     }
 
     private func pushBoard(_ board: Board) {
-        self.history.append(board)
+        guard let top = history.last,
+              board == top else {
+            return
+        }
+
+        history.append(board)
     }
 
     private func undoBoard() -> Board {
