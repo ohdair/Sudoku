@@ -77,7 +77,7 @@ class GameViewController: UIViewController {
 
         let output = gameViewModel.transform(input: input)
 
-        output.boardOutput.board
+        output.board
             .drive { board in
                 board.forEachMatrix { row, column, sudokuItem in
                     let indexPath = IndexPath(row: row, column: column)

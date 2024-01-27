@@ -27,6 +27,7 @@ final class GameViewModel: ViewModelType {
         var sudoku: Observable<Sudoku>
         var loading: Driver<Bool>
         var alert: Observable<AlertView.Alert>
+        var board: Driver<[[SudokuItem]]>
     }
 
     private let sudoku = PublishSubject<Sudoku>()
@@ -61,6 +62,7 @@ final class GameViewModel: ViewModelType {
             .subscribe { sudokuData in
                 let sudoku = Sudoku(data: sudokuData)
                 self.sudoku.onNext(sudoku)
+                self.board.accept(sudoku.board)
                 LoadingIndicator.hideLoading()
             } onError: { error in
                 LoadingIndicator.hideLoading()
@@ -79,6 +81,10 @@ final class GameViewModel: ViewModelType {
     }
 
     func transform(input: Input) -> Output {
+//        sudoku.map { $0.board }
+//            .bind(to: self.board)
+//            .disposed(by: disposeBag)
+
         input.newGameTapped
             .drive { _ in
                 self.fetchSudoku()
@@ -109,12 +115,17 @@ final class GameViewModel: ViewModelType {
 
         bindingAbilityViewModel(ability: input.abilityButtonTapped)
 
+        boardViewModelOutput.board
+            .drive(board)
+            .disposed(by: disposeBag)
+
         return Output(
             informationOutput: informationViewModelOutput,
             boardOutput: boardViewModelOutput,
             sudoku: sudoku,
             loading: fetching.asDriver(onErrorJustReturn: false),
-            alert: BehaviorSubject<AlertView.Alert>(value: .back)
+            alert: BehaviorSubject<AlertView.Alert>(value: .back),
+            board: board.asDriver()
         )
     }
 
@@ -138,10 +149,9 @@ final class GameViewModel: ViewModelType {
         numberButtonTapped: Driver<Int>
     ) -> BoardViewModel.Output {
         let observableData = sudoku.map { $0.data }
-        let observableBoard = sudoku.map { $0.board }
         let input = BoardViewModel.Input(
             data: observableData,
-            board: observableBoard,
+            board: board.asObservable(),
             isOnMemo: isOnMemo.asDriver(),
             cellButtonTapped: cellButtonTapped,
             numberButtonTapped: numberButtonTapped

@@ -32,7 +32,6 @@ final class AbilityViewModel: ViewModelType {
     }
 
     private var history = [Board]()
-    private let board = PublishRelay<Board>()
     private let isOnMemo = BehaviorRelay<Bool>(value: false)
     private let disposeBag = DisposeBag()
 
@@ -64,8 +63,9 @@ final class AbilityViewModel: ViewModelType {
     }
 
     private func pushBoard(_ board: Board) {
-        guard let top = history.last,
-              board == top else {
+        guard !board.isEmpty,
+              board != history.last
+        else {
             return
         }
 
