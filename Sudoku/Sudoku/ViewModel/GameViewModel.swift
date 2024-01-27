@@ -28,6 +28,7 @@ final class GameViewModel: ViewModelType {
         var loading: Driver<Bool>
         var alert: Observable<AlertView.Alert>
         var board: Driver<[[SudokuItem]]>
+        var isOnMemo: Driver<Bool>
     }
 
     private let sudoku = PublishSubject<Sudoku>()
@@ -125,7 +126,8 @@ final class GameViewModel: ViewModelType {
             sudoku: sudoku,
             loading: fetching.asDriver(onErrorJustReturn: false),
             alert: BehaviorSubject<AlertView.Alert>(value: .back),
-            board: board.asDriver()
+            board: board.asDriver(),
+            isOnMemo: isOnMemo.asDriver()
         )
     }
 

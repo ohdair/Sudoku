@@ -93,6 +93,10 @@ class GameViewController: UIViewController {
             }
             .disposed(by: disposeBag)
 
+        output.isOnMemo
+            .drive(self.abilityStackView.button(of: .memo).rx.isOnMemo)
+            .disposed(by: disposeBag)
+
         // MARK: - InformationView
         output.informationOutput.difficulty
             .drive(self.informationStackView.label(of: .difficulty).rx.text)
@@ -348,7 +352,7 @@ class GameViewController: UIViewController {
     }
 
     @objc private func tappedMemoButton(_ sender: AbilityButton) {
-        sender.toggleMemo()
+//        sender.toggleMemo()
         sudoku.isOnMemo = sender.isOnMemo
     }
 
