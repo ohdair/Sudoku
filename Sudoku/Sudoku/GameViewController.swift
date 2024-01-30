@@ -26,6 +26,8 @@ class GameViewController: UIViewController {
 
     private var gameViewModel: GameViewModel!
 
+    private let errorTrigger = PublishRelay<Void>()
+
     var sudoku: Sudoku!
 
     convenience init(viewModel: GameViewModel) {
@@ -153,6 +155,14 @@ class GameViewController: UIViewController {
             }
             .disposed(by: disposeBag)
 
+        output.sudoku
+            .observe(on: MainScheduler.instance)
+            .subscribe(onCompleted: {
+                self.errorTrigger.accept(())
+                self.present(self.alertViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
+
         viewDidLoad.onNext(())
     }
 
@@ -209,7 +219,7 @@ class GameViewController: UIViewController {
             backButtonTapped: backButtonTapped,
             pauseButtonTapped: pauseButtonTapped,
             mistakeTrigger: PublishSubject<Void>().asDriver(onErrorJustReturn: ()),
-            errorTrigger: PublishSubject<Void>().asDriver(onErrorJustReturn: ())
+            errorTrigger: errorTrigger.asDriver(onErrorJustReturn: ())
         )
 
         alertViewController = AlertViewController(input: alertViewModelInput)

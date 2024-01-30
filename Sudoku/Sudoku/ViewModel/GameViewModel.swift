@@ -67,7 +67,7 @@ final class GameViewModel: ViewModelType {
                 LoadingIndicator.hideLoading()
             } onError: { error in
                 LoadingIndicator.hideLoading()
-                self.sudoku.onError(error)
+                self.sudoku.onCompleted()
             }
             .disposed(by: disposeBag)
     }
@@ -187,4 +187,8 @@ final class GameViewModel: ViewModelType {
             .drive(isOnMemo)
             .disposed(by: disposeBag)
     }
+
+//    func savedSudoku() -> Sudoku {
+//
+//    }
 }
