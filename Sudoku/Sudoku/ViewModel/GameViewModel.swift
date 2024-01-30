@@ -160,7 +160,8 @@ final class GameViewModel: ViewModelType {
             board: board.asObservable(),
             isOnMemo: isOnMemo.asDriver(),
             cellButtonTapped: cellButtonTapped,
-            numberButtonTapped: numberButtonTapped
+            numberButtonTapped: numberButtonTapped,
+            eraseTrigger: eraseTrigger.asDriver(onErrorJustReturn: ())
         )
 
         return boardViewModel.transform(input: input)

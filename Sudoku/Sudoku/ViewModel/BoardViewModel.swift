@@ -19,6 +19,7 @@ final class BoardViewModel: ViewModelType {
         var isOnMemo: Driver<Bool>
         var cellButtonTapped: Driver<IndexPath>
         var numberButtonTapped: Driver<Int>
+        var eraseTrigger: Driver<Void>
     }
 
     struct Output {
@@ -46,6 +47,16 @@ final class BoardViewModel: ViewModelType {
 
     func transform(input: Input) -> Output {
         bind(to: input)
+
+        let updatedBoardToErase = input.eraseTrigger
+            .filter { _ in self.isProblemCursor() == false }
+            .map { _ in
+                let cursor = self.cursor.value
+                return 0...8 ~= cursor.section && 0...8 ~= cursor.item
+            }
+            .filter { $0 }
+            .map { _ in SudokuItem() }
+            .map { self.updatedBoard(to: $0, of: self.cursor.value) }
 
         let updatedBoardToMemo = input.numberButtonTapped
             .filter { _ in self.isProblemCursor() == false }
@@ -100,7 +111,7 @@ final class BoardViewModel: ViewModelType {
             .disposed(by: disposeBag)
 
         return Output(
-            board: Driver.merge(updatedBoardToMemo, updatedBoardToNumber),
+            board: Driver.merge(updatedBoardToErase, updatedBoardToMemo, updatedBoardToNumber),
             cursor: cursor.asDriver().skip(1),
             cursorState: cursorState.asDriver(),
             associatedMistake: associatedMistake,
