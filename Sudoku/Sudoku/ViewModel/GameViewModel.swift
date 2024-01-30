@@ -32,7 +32,6 @@ final class GameViewModel: ViewModelType {
     }
 
     private let sudoku = PublishSubject<Sudoku>()
-    private let mistakeTrigger = PublishSubject<Void>()
     private let fetching = PublishSubject<Bool>()
     private let disposeBag = DisposeBag()
     private let board = BehaviorRelay<[[SudokuItem]]>(value: [])
@@ -49,6 +48,7 @@ final class GameViewModel: ViewModelType {
 
     // Action
     private let eraseTrigger = PublishSubject<Void>()
+    private let mistakeTrigger = PublishSubject<Void>()
 
     init(sudoku: Sudoku) {
         self.savedSudoku = sudoku
@@ -118,6 +118,10 @@ final class GameViewModel: ViewModelType {
 
         boardViewModelOutput.board
             .drive(board)
+            .disposed(by: disposeBag)
+
+        boardViewModelOutput.mistakeTrigger
+            .drive(mistakeTrigger)
             .disposed(by: disposeBag)
 
         return Output(

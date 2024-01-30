@@ -28,6 +28,7 @@ final class BoardViewModel: ViewModelType {
         var associatedMistake: Driver<[IndexPath]>
         var associatedIndexPaths: Driver<[IndexPath]>
         var associatedNumbers: Driver<[IndexPath]>
+        var mistakeTrigger: Driver<Void>
     }
 
     private let problem = BehaviorRelay<[[Int]]>(value: [])
@@ -51,17 +52,11 @@ final class BoardViewModel: ViewModelType {
             .map { self.updatedMemoOfCursor(to: $0) }
             .map { self.updatedBoard(to: $0, of: self.cursor.value) }
 
-        let updatedNumber = input.numberButtonTapped
+        let updatedBoardToNumber = input.numberButtonTapped
             .filter { _ in self.isProblemCursor() == false }
             .filter { _ in !self.isOnMemo.value }
             .map { self.updatedNumberOfCursor(to: $0) }
-
-        let updatedBoardToNumber = updatedNumber
             .map { self.updatedBoard(to: $0, of: self.cursor.value) }
-
-        // MARK: - cursor의 숫자가 업데이트되면(메모 X) 해당 커서와 관련된 칠하는 Driver 생성
-
-        let updatedBoard = Driver.zip(updatedNumber, updatedBoardToNumber)
         
         input.board
             .skip(2)
@@ -86,6 +81,12 @@ final class BoardViewModel: ViewModelType {
             .map { _ in self.associatedMistake() }
             .asDriver(onErrorJustReturn: [])
 
+        let mistakeTrigger = updatedBoardToNumber
+            .map { _ in self.associatedMistake() }
+            .map { !$0.isEmpty }
+            .filter { $0 }
+            .map { _ in }
+
         associatedMistake
             .map { !$0.isEmpty }
             .map { self.cursorState(using: $0) }
@@ -98,7 +99,8 @@ final class BoardViewModel: ViewModelType {
             cursorState: cursorState.asDriver(),
             associatedMistake: associatedMistake,
             associatedIndexPaths: associatedIndexPaths.asDriver(),
-            associatedNumbers: associatedNumbers.asDriver()
+            associatedNumbers: associatedNumbers.asDriver(),
+            mistakeTrigger: mistakeTrigger
         )
     }
 
