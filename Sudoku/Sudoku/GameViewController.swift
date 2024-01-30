@@ -147,6 +147,12 @@ class GameViewController: UIViewController {
             }
             .disposed(by: disposeBag)
 
+        output.boardOutput.endGameTrigger
+            .drive { _ in
+                // MARK: - 종료에 관한 이벤트 추가
+            }
+            .disposed(by: disposeBag)
+
         viewDidLoad.onNext(())
     }
 

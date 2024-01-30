@@ -29,6 +29,7 @@ final class BoardViewModel: ViewModelType {
         var associatedIndexPaths: Driver<[IndexPath]>
         var associatedNumbers: Driver<[IndexPath]>
         var mistakeTrigger: Driver<Void>
+        var endGameTrigger: Driver<Void>
     }
 
     private let problem = BehaviorRelay<[[Int]]>(value: [])
@@ -87,6 +88,11 @@ final class BoardViewModel: ViewModelType {
             .filter { $0 }
             .map { _ in }
 
+        let endGameTrigger = updatedBoardToNumber
+            .map { self.isEnd($0) }
+            .filter { $0 }
+            .map { _ in () }
+
         associatedMistake
             .map { !$0.isEmpty }
             .map { self.cursorState(using: $0) }
@@ -100,7 +106,8 @@ final class BoardViewModel: ViewModelType {
             associatedMistake: associatedMistake,
             associatedIndexPaths: associatedIndexPaths.asDriver(),
             associatedNumbers: associatedNumbers.asDriver(),
-            mistakeTrigger: mistakeTrigger
+            mistakeTrigger: mistakeTrigger,
+            endGameTrigger: endGameTrigger
         )
     }
 
@@ -182,6 +189,18 @@ final class BoardViewModel: ViewModelType {
         }
 
         return state
+    }
+
+    private func isEnd(_ board: Board) -> Bool {
+        for (boardRow, solutionRow) in zip(board, solution.value) {
+            for (boardItem, solutionItem) in zip(boardRow, solutionRow) {
+                guard boardItem.number == solutionItem else {
+                    return false
+                }
+            }
+        }
+
+        return true
     }
 }
 
