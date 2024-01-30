@@ -10,6 +10,7 @@ import RxSwift
 import RxCocoa
 
 class GameViewController: UIViewController {
+
     private let backBarButtonItem = UIBarButtonItem.back()
     private let pauseBarButtonItem = UIBarButtonItem.pause()
 
@@ -19,7 +20,6 @@ class GameViewController: UIViewController {
     private let numberStackView = NumberStackView()
     private let disposeBag = DisposeBag()
 
-    private var cursor: IndexPath?
     private var informationViewModel: InformationViewModel!
     private var alertViewModelInput: AlertViewModel.Input!
     private var alertViewController: AlertViewController!
@@ -27,6 +27,7 @@ class GameViewController: UIViewController {
     private var gameViewModel: GameViewModel!
 
     private let errorTrigger = PublishRelay<Void>()
+    private let overMistakeTrigger = PublishRelay<Void>()
 
     var sudoku: Sudoku!
 
@@ -107,6 +108,16 @@ class GameViewController: UIViewController {
         output.informationOutput.mistake
             .map { "\($0) / 3"}
             .drive(self.informationStackView.label(of: .mistake).rx.text)
+            .disposed(by: disposeBag)
+
+        output.informationOutput.mistake
+            .map { $0 == 3 }
+            .filter { $0 }
+            .map { _ in }
+            .drive { _ in
+                self.overMistakeTrigger.accept(())
+                self.present(self.alertViewController, animated: true)
+            }
             .disposed(by: disposeBag)
 
         output.informationOutput.time
@@ -218,7 +229,7 @@ class GameViewController: UIViewController {
         alertViewModelInput = AlertViewModel.Input(
             backButtonTapped: backButtonTapped,
             pauseButtonTapped: pauseButtonTapped,
-            mistakeTrigger: PublishSubject<Void>().asDriver(onErrorJustReturn: ()),
+            mistakeTrigger: overMistakeTrigger.asDriver(onErrorJustReturn: ()),
             errorTrigger: errorTrigger.asDriver(onErrorJustReturn: ())
         )
 
@@ -237,7 +248,7 @@ class GameViewController: UIViewController {
         alertViewController.alertButton(of: .new).rx.tap
             .asDriver()
             .drive { _ in
-                // 새로운 Sudoku Fetch
+                self.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
 
@@ -256,7 +267,7 @@ class GameViewController: UIViewController {
         alertViewController.alertButton(of: .restart).rx.tap
             .asDriver()
             .drive { _ in
-                // 기본적인 Sudoku 문제를 제외한 데이터 삭제
+                self.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
     }
@@ -268,14 +279,6 @@ class GameViewController: UIViewController {
                                               .foregroundColor: UIColor.darkMainColor2]
         self.navigationItem.leftBarButtonItem = backBarButtonItem
         self.navigationItem.rightBarButtonItem = pauseBarButtonItem
-
-//        numberStackView.addTargetNumberButtons(self, selector: #selector(tappedNumberButton))
-//        abilityStackView.addTarget(self, selector: #selector(tappedMemoButton), ability: .memo)
-//        abilityStackView.addTarget(self, selector: #selector(tappedUndoButton), ability: .undo)
-//        abilityStackView.addTarget(self, selector: #selector(tappedEraseButton), ability: .erase)
-//        boardView.sections.forEach { sectionView in
-//            sectionView.delegate = self
-//        }
     }
 
     private func setLayout() {
@@ -311,149 +314,4 @@ class GameViewController: UIViewController {
         ])
     }
 
-    @objc private func tappedNumberButton(_ sender: NumberButton) {
-        guard let cursor,
-              !sudoku.isProblem(indexPath: cursor) else {
-            return
-        }
-
-        sudoku.update(number: sender.number, indexPath: cursor)
-        sudoku.history.append(sudoku.board)
-        let sudokuItem = sudoku.item(of: cursor)
-        let cellButton = boardView.cellButton(of: cursor)
-        cellButton.update(to: sudokuItem)
-
-        if !sudoku.isOnMemo {
-            paint(associated: cursor)
-        }
-
-        if sudoku.isMistake(indexPath: cursor) {
-            increaseMistake()
-        }
-    }
-
-    @objc private func tappedUndoButton(_ sender: AbilityButton) {
-        guard sudoku.history.count > 1,
-              let currentBoard = sudoku.history.popLast(),
-              let previousBoard = sudoku.history.last
-        else { return }
-
-        zip(currentBoard, previousBoard)
-            .compactMapMatrix { currentItem, previousItem in
-                currentItem == previousItem ? nil : previousItem
-            }
-            .forEachMatrix { row, column, sudokuItem in
-                if let sudokuItem {
-                    let indexPath = sudoku.indexPath(row: row, column: column)
-                    let cellButton = boardView.cellButton(of: indexPath)
-                    sudoku.update(item: sudokuItem, indexPath: indexPath)
-                    DispatchQueue.main.async {
-                        cellButton.update(to: sudokuItem)
-                        self.paint(associated: indexPath)
-                    }
-                }
-            }
-
-    }
-
-    @objc private func tappedEraseButton(_ sender: AbilityButton) {
-        guard let cursor else { return }
-        sudoku.erase(indexPath: cursor)
-        sudoku.history.append(sudoku.board)
-
-        let sudokuItem = sudoku.item(of: cursor)
-        let cellButton = boardView.cellButton(of: cursor)
-        cellButton.update(to: sudokuItem)
-        paint(associated: cursor)
-    }
-
-    @objc private func tappedMemoButton(_ sender: AbilityButton) {
-//        sender.toggleMemo()
-        sudoku.isOnMemo = sender.isOnMemo
-    }
-
-    private func requestSudoku() async {
-        LoadingIndicator.showLoading()
-
-        Networking.request()
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { sudokuData in
-                let sudoku = Sudoku(data: sudokuData)
-                self.sudoku = sudoku
-                self.configure(of: sudoku)
-            }, onError: { error in
-                print(error)
-                LoadingIndicator.hideLoading()
-//                self.alert(type: .error)
-            })
-            .disposed(by: disposeBag)
-    }
-
-    @objc private func reConfigure() {
-        let sudoku = Sudoku(data: sudoku.data)
-
-        self.sudoku = sudoku
-        configure(of: sudoku)
-        boardView.paintedReset()
-    }
-
-    private func configure(of sudoku: Sudoku) {
-        LoadingIndicator.showLoading()
-        boardView.updateAll(sudoku.board) { indexPath in
-            paintText(associated: indexPath)
-        }
-        boardView.paintedReset()
-        pauseBarButtonItem.image = UIImage(systemName: "pause.circle")
-        LoadingIndicator.hideLoading()
-    }
-
-    private func paint(associated indexPath: IndexPath) {
-        let associatedIndexPaths = sudoku.associatedIndexPaths(indexPath: indexPath)
-        let associatedNumbers = sudoku.associatedNumbers(indexPath: indexPath)
-        boardView.paintedReset()
-        boardView.paint(to: associatedIndexPaths, into: .associatedCursor)
-        boardView.paint(to: indexPath, into: .selected)
-        boardView.paint(to: associatedNumbers, into: .associatedNumber)
-
-        if sudoku.isMistake(indexPath: indexPath) {
-            let associatedMistake = sudoku.mistake(indexPath: indexPath)
-            boardView.paint(to: associatedMistake, into: .mistake)
-        }
-
-        paintText(associated: indexPath)
-    }
-
-    private func paintText(associated indexPath: IndexPath) {
-        guard !sudoku.isProblem(indexPath: indexPath) else {
-            boardView.paintText(to: indexPath, into: .problem)
-            return
-        }
-
-        if sudoku.isMistake(indexPath: indexPath) {
-            boardView.paintText(to: indexPath, into: .mistake)
-        } else {
-            boardView.paintText(to: indexPath, into: .selected)
-        }
-    }
-
-    private func increaseMistake() {
-        sudoku.increaseMistake()
-
-        if sudoku.isOverMistake {
-//            alert(type: .overMistake)
-        }
-    }
-
-}
-
-extension GameViewController: SectionViewDelegate {
-    func cellButtonTapped(_ button: CellButton) {
-        cursor = button.indexPath
-
-        paint(associated: button.indexPath)
-    }
-
-    func formatSeconds(_ second: Int) -> String {
-        String(format: "%d:%02d", Int(second/60), Int(second % 60))
-    }
 }
