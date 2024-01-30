@@ -21,13 +21,12 @@ class GameViewController: UIViewController {
     private let disposeBag = DisposeBag()
 
     private var informationViewModel: InformationViewModel!
-    private var alertViewModelInput: AlertViewModel.Input!
-    private var alertViewController: AlertViewController!
+
 
     private var gameViewModel: GameViewModel!
 
-    private let errorTrigger = PublishRelay<Void>()
-    private let overMistakeTrigger = PublishRelay<Void>()
+    private var alertViewController: AlertViewController!
+    private let alertTrigger = PublishRelay<AlertView.Alert>()
 
     var sudoku: Sudoku!
 
@@ -53,7 +52,7 @@ class GameViewController: UIViewController {
         // viewmodel 설정을 기다리도록
 
         bindAlertViewModel()
-        bindAlertButtons()
+        bindButtons()
         bindGameViewModel()
     }
 
@@ -115,8 +114,7 @@ class GameViewController: UIViewController {
             .filter { $0 }
             .map { _ in }
             .drive { _ in
-                self.overMistakeTrigger.accept(())
-                self.present(self.alertViewController, animated: true)
+                self.alertTrigger.accept(.overMistake)
             }
             .disposed(by: disposeBag)
 
@@ -169,8 +167,7 @@ class GameViewController: UIViewController {
         output.sudoku
             .observe(on: MainScheduler.instance)
             .subscribe(onCompleted: {
-                self.errorTrigger.accept(())
-                self.present(self.alertViewController, animated: true)
+                self.alertTrigger.accept(.error)
             })
             .disposed(by: disposeBag)
 
@@ -217,27 +214,33 @@ class GameViewController: UIViewController {
     }
 
     func bindAlertViewModel() {
-        let pauseButtonTapped = pauseBarButtonItem.rx.tap.asDriver()
-        let backButtonTapped = backBarButtonItem.rx.tap.asDriver()
-
-        Driver.merge(pauseButtonTapped, backButtonTapped)
-            .drive { _ in
+        alertTrigger
+            .subscribe { _ in
                 self.present(self.alertViewController, animated: true)
             }
             .disposed(by: disposeBag)
 
-        alertViewModelInput = AlertViewModel.Input(
-            backButtonTapped: backButtonTapped,
-            pauseButtonTapped: pauseButtonTapped,
-            mistakeTrigger: overMistakeTrigger.asDriver(onErrorJustReturn: ()),
-            errorTrigger: errorTrigger.asDriver(onErrorJustReturn: ())
-        )
+        let input = AlertViewModel.Input(alertTrigger: alertTrigger.asObservable())
 
-        alertViewController = AlertViewController(input: alertViewModelInput)
+        alertViewController = AlertViewController(input: input)
         alertViewController.modalPresentationStyle = .overFullScreen
     }
 
-    func bindAlertButtons() {
+    func bindButtons() {
+        // MARK: - NavigationBarItem
+        backBarButtonItem.rx.tap
+            .subscribe { _ in
+                self.alertTrigger.accept(.back)
+            }
+            .disposed(by: disposeBag)
+
+        pauseBarButtonItem.rx.tap
+            .subscribe { _ in
+                self.alertTrigger.accept(.pause)
+            }
+            .disposed(by: disposeBag)
+
+        // MARK: - AlertButtons of AlertViewController
         alertViewController.alertButton(of: .continue).rx.tap
             .asDriver()
             .drive { _ in

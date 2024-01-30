@@ -12,10 +12,7 @@ import RxSwift
 final class AlertViewModel: ViewModelType {
 
     struct Input {
-        var backButtonTapped: Driver<Void>
-        var pauseButtonTapped: Driver<Void>
-        var mistakeTrigger: Driver<Void>
-        var errorTrigger: Driver<Void>
+        var alertTrigger: Observable<AlertView.Alert>
     }
 
     struct Output {
@@ -27,11 +24,9 @@ final class AlertViewModel: ViewModelType {
         var quitGameButtonIsHidden: Driver<Bool>
     }
 
-    private let alertSubject = PublishSubject<AlertView.Alert>()
-    private let disposedBag = DisposeBag()
-
     func transform(input: Input) -> Output {
-        let alert = conformAlert(input: input)
+        let alert = input.alertTrigger
+            .asDriver(onErrorJustReturn: .back)
 
         let title = alert
             .map { $0.title }
@@ -59,25 +54,6 @@ final class AlertViewModel: ViewModelType {
             newGameButtonIsHidden: newGameButtonIsHidden,
             quitGameButtonIsHidden: quitGameButtonIsHidden
         )
-    }
-
-    func conformAlert(input: Input) -> Driver<AlertView.Alert> {
-        let backButtonAlert = input.backButtonTapped
-            .map { AlertView.Alert.back }
-
-        let pauseButtonAlert = input.pauseButtonTapped
-            .map { AlertView.Alert.pause }
-
-        let mistakeAlert = input.mistakeTrigger
-            .map { AlertView.Alert.overMistake }
-
-        let errorAlert = input.errorTrigger
-            .map { AlertView.Alert.error }
-
-        return Driver.merge(backButtonAlert, pauseButtonAlert, mistakeAlert, errorAlert)
-            .do { alert in
-                self.alertSubject.onNext(alert)
-            }
     }
 
 }
