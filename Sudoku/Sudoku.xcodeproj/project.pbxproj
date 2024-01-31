@@ -28,6 +28,7 @@
 		F60BB9562B031F34005137FE /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9552B031F34005137FE /* GameButton.swift */; };
 		F60BB9592B0321D6005137FE /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB9582B0321D6005137FE /* TimeInterval.swift */; };
 		F61BFD032B624E660052D077 /* AbilityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61BFD022B624E660052D077 /* AbilityViewModel.swift */; };
+		F61BFD072B69F2D40052D077 /* SphereEmitterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61BFD062B69F2D40052D077 /* SphereEmitterView.swift */; };
 		F61F1CD22B25683200AADED8 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61F1CD12B25683200AADED8 /* AlertView.swift */; };
 		F627F4692B30804B007EFEC7 /* ViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F627F4682B30804B007EFEC7 /* ViewModelType.swift */; };
 		F627F46B2B308345007EFEC7 /* Information.swift in Sources */ = {isa = PBXBuildFile; fileRef = F627F46A2B308345007EFEC7 /* Information.swift */; };
@@ -84,6 +85,7 @@
 		F60BB9552B031F34005137FE /* GameButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButton.swift; sourceTree = "<group>"; };
 		F60BB9582B0321D6005137FE /* TimeInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
 		F61BFD022B624E660052D077 /* AbilityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbilityViewModel.swift; sourceTree = "<group>"; };
+		F61BFD062B69F2D40052D077 /* SphereEmitterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SphereEmitterView.swift; sourceTree = "<group>"; };
 		F61F1CD12B25683200AADED8 /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		F627F4682B30804B007EFEC7 /* ViewModelType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelType.swift; sourceTree = "<group>"; };
 		F627F46A2B308345007EFEC7 /* Information.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Information.swift; sourceTree = "<group>"; };
@@ -188,6 +190,7 @@
 		F60BB9542B031F22005137FE /* View */ = {
 			isa = PBXGroup;
 			children = (
+				F61BFD062B69F2D40052D077 /* SphereEmitterView.swift */,
 				F60BB9552B031F34005137FE /* GameButton.swift */,
 				F60B9D732B0C9D740036AA1B /* AbilityButton.swift */,
 				F60B9D752B0CA85A0036AA1B /* NumberButton.swift */,
@@ -327,6 +330,7 @@
 			files = (
 				F63272642B143B4000F16FA8 /* BoardView.swift in Sources */,
 				F68998A72B1EFC45009AB0D2 /* IndexPath.swift in Sources */,
+				F61BFD072B69F2D40052D077 /* SphereEmitterView.swift in Sources */,
 				F689989F2B1ECD7E009AB0D2 /* InformationStackView.swift in Sources */,
 				F61BFD032B624E660052D077 /* AbilityViewModel.swift in Sources */,
 				F627F46B2B308345007EFEC7 /* Information.swift in Sources */,

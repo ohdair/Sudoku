@@ -69,6 +69,7 @@ extension AlertView {
         case back
         case overMistake
         case error
+        case success
 
         var title: String {
             switch self {
@@ -80,12 +81,14 @@ extension AlertView {
                 "실수를 초과하였습니다."
             case .error:
                 "네트워크 문제가 발생하였습니다."
+            case .success:
+                "성공에 축하합니다."
             }
         }
 
         var titleFontSize: CGFloat {
             switch self {
-            case .pause:
+            case .pause, .success:
                 26
             default:
                 20

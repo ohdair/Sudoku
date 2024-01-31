@@ -35,13 +35,13 @@ final class AlertViewModel: ViewModelType {
             .map { $0.titleFontSize }
 
         let continueButtonIsHidden = alert
-            .map { $0 == .overMistake || $0 == .error }
+            .map { $0 == .overMistake || $0 == .error || $0 == .success }
 
         let restartButtonIsHidden = alert
             .map { $0 != .overMistake }
 
         let newGameButtonIsHidden = alert
-            .map { $0 == .back || $0 == .error }
+            .map { $0 == .back || $0 == .error || $0 == .success }
 
         let quitGameButtonIsHidden = alert
             .map { $0 == .pause || $0 == .overMistake }

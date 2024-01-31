@@ -20,6 +20,7 @@ class GameViewController: UIViewController {
     private let boardView = BoardView()
     private let abilityStackView = AbilityStackView()
     private let numberStackView = NumberStackView()
+    private let sphereEmitterView = SphereEmitterView()
     private var alertViewController: AlertViewController!
 
     // MARK: - ViewModel
@@ -156,8 +157,13 @@ class GameViewController: UIViewController {
             .disposed(by: disposeBag)
 
         output.boardOutput.endGameTrigger
-            .drive { _ in
-                // MARK: - 종료에 관한 이벤트 추가
+            .asObservable()
+            .do { _ in self.sphereEmitterView.emit() }
+            .flatMap { _ in self.mergedObservablesForEndgame() }
+            .first()
+            .subscribe { _ in
+                self.sphereEmitterView.remove()
+                self.alertTrigger.accept(.success)
             }
             .disposed(by: disposeBag)
 
@@ -208,6 +214,15 @@ class GameViewController: UIViewController {
         }
 
         return Driver.merge(numberButtonDrivers)
+    }
+
+    private func mergedObservablesForEndgame() -> Observable<Void> {
+        let tapObservable = sphereEmitterView.observeTap()
+
+        let delayedObservable = Observable<Void>.just(())
+            .delay(.seconds(5), scheduler: MainScheduler.instance)
+
+        return Observable.merge(tapObservable, delayedObservable)
     }
 
     private func bindAlertViewModel() {
@@ -273,13 +288,13 @@ class GameViewController: UIViewController {
         view.addSubview(boardView)
         view.addSubview(abilityStackView)
         view.addSubview(numberStackView)
-        
+        view.addSubview(sphereEmitterView)
 
         informationStackView.translatesAutoresizingMaskIntoConstraints = false
         boardView.translatesAutoresizingMaskIntoConstraints = false
         abilityStackView.translatesAutoresizingMaskIntoConstraints = false
         numberStackView.translatesAutoresizingMaskIntoConstraints = false
-        
+        sphereEmitterView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             informationStackView.widthAnchor.constraint(equalTo: view.widthAnchor),
@@ -298,6 +313,11 @@ class GameViewController: UIViewController {
             numberStackView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9),
             numberStackView.topAnchor.constraint(equalTo: abilityStackView.bottomAnchor, constant: 30),
             numberStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+
+            sphereEmitterView.topAnchor.constraint(equalTo: view.topAnchor),
+            sphereEmitterView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            sphereEmitterView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            sphereEmitterView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
 
