@@ -23,6 +23,7 @@ final class AbilityViewModel: ViewModelType {
     struct Input {
         var board: Observable<Board>
         var ability: Driver<AbilityButton.Ability>
+        var reformTrigger: Observable<Void>
     }
 
     struct Output {
@@ -55,6 +56,10 @@ final class AbilityViewModel: ViewModelType {
             .drive(isOnMemo)
             .disposed(by: disposeBag)
 
+        input.reformTrigger
+            .subscribe { _ in self.reset() }
+            .disposed(by: disposeBag)
+
         return Output(
             board: undoBoard,
             eraseTrigger: eraseTrigger,
@@ -79,5 +84,10 @@ final class AbilityViewModel: ViewModelType {
 
         history.removeLast()
         return history.last!
+    }
+
+    private func reset() {
+        history.removeAll()
+        isOnMemo.accept(false)
     }
 }

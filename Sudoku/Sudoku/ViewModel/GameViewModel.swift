@@ -50,6 +50,7 @@ final class GameViewModel: ViewModelType {
     // Action
     private let eraseTrigger = PublishSubject<Void>()
     private let mistakeTrigger = PublishSubject<Void>()
+    private let reformTrigger = PublishRelay<Void>()
 
     init(sudoku: Sudoku) {
         self.savedSudoku = sudoku
@@ -64,6 +65,7 @@ final class GameViewModel: ViewModelType {
 
         Networking.request()
             .subscribe { sudokuData in
+                self.reformTrigger.accept(())
                 let sudoku = Sudoku(data: sudokuData)
                 self.sudoku.onNext(sudoku)
                 self.board.accept(sudoku.board)
@@ -86,6 +88,7 @@ final class GameViewModel: ViewModelType {
             .asObservable()
             .withLatestFrom(sudoku)
             .subscribe(onNext: { sudoku in
+                self.reformTrigger.accept(())
                 let newSudoku = Sudoku(data: sudoku.data)
                 self.sudoku.onNext(newSudoku)
                 self.board.accept(newSudoku.board)
@@ -186,7 +189,8 @@ final class GameViewModel: ViewModelType {
     private func bindingAbilityViewModel(ability: Driver<AbilityButton.Ability>) {
         let input = AbilityViewModel.Input(
             board: board.asObservable(),
-            ability: ability
+            ability: ability,
+            reformTrigger: reformTrigger.asObservable()
         )
 
         let output = abilityViewModel.transform(input: input)
