@@ -20,11 +20,9 @@ class GameViewController: UIViewController {
     private let boardView = BoardView()
     private let abilityStackView = AbilityStackView()
     private let numberStackView = NumberStackView()
-
     private var alertViewController: AlertViewController!
 
     // MARK: - ViewModel
-    private var informationViewModel: InformationViewModel!
     private var gameViewModel: GameViewModel!
 
     private let alertTrigger = PublishRelay<AlertView.Alert>()
@@ -38,7 +36,6 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
 
         if gameViewModel == nil {
             gameViewModel = GameViewModel()
@@ -112,9 +109,7 @@ class GameViewController: UIViewController {
             .disposed(by: disposeBag)
 
         output.informationOutput.mistake
-            .map { $0 == 3 }
-            .filter { $0 }
-            .map { _ in }
+            .filter { $0 == 3 }
             .drive { _ in
                 self.alertTrigger.accept(.overMistake)
             }
@@ -264,12 +259,13 @@ class GameViewController: UIViewController {
     }
 
     private func setUI() {
-        self.title = "Sudoku"
+        view.backgroundColor = .systemBackground
+        title = "Sudoku"
         let navigationBar = self.navigationController?.navigationBar
         navigationBar?.titleTextAttributes = [.font: UIFont.systemFont(ofSize: 22, weight: .bold),
                                               .foregroundColor: UIColor.darkMainColor2]
-        self.navigationItem.leftBarButtonItem = backBarButtonItem
-        self.navigationItem.rightBarButtonItem = pauseBarButtonItem
+        navigationItem.leftBarButtonItem = backBarButtonItem
+        navigationItem.rightBarButtonItem = pauseBarButtonItem
     }
 
     private func setLayout() {
