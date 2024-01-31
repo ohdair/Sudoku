@@ -19,6 +19,7 @@ final class GameViewModel: ViewModelType {
         var cellButtonTapped: Driver<IndexPath>
         var abilityButtonTapped: Driver<AbilityButton.Ability>
         var numberButtonTapped: Driver<Int>
+        var saveGameTrigger: Observable<Void>
     }
 
     struct Output {
@@ -52,6 +53,8 @@ final class GameViewModel: ViewModelType {
 
     init(sudoku: Sudoku) {
         self.savedSudoku = sudoku
+        self.sudoku.onNext(sudoku)
+        self.board.accept(sudoku.board)
     }
 
     init() { }
@@ -72,20 +75,7 @@ final class GameViewModel: ViewModelType {
             .disposed(by: disposeBag)
     }
 
-    private func reformSudoku() {
-        sudoku
-            .map { Sudoku(data: $0.data) }
-            .subscribe { newSudoku in
-                self.sudoku.onNext(newSudoku)
-            }
-            .disposed(by: disposeBag)
-    }
-
     func transform(input: Input) -> Output {
-//        sudoku.map { $0.board }
-//            .bind(to: self.board)
-//            .disposed(by: disposeBag)
-
         input.newGameTapped
             .drive { _ in
                 self.fetchSudoku()
@@ -93,9 +83,13 @@ final class GameViewModel: ViewModelType {
             .disposed(by: disposeBag)
 
         input.reGameTapped
-            .drive { _ in
-                self.reformSudoku()
-            }
+            .asObservable()
+            .withLatestFrom(sudoku)
+            .subscribe(onNext: { sudoku in
+                let newSudoku = Sudoku(data: sudoku.data)
+                self.sudoku.onNext(newSudoku)
+                self.board.accept(newSudoku.board)
+            })
             .disposed(by: disposeBag)
 
         input.viewDidLoad
@@ -122,6 +116,28 @@ final class GameViewModel: ViewModelType {
 
         boardViewModelOutput.mistakeTrigger
             .drive(mistakeTrigger)
+            .disposed(by: disposeBag)
+
+        let combinedObservable = Observable.combineLatest(
+            sudoku.asObservable(),
+            informationViewModelOutput.mistake.asObservable(),
+            informationViewModelOutput.time.asObservable(),
+            board.asObservable()
+        )
+
+        input.saveGameTrigger
+            .withLatestFrom(combinedObservable)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { sudoku, mistake, time, board in
+                var sudoku = sudoku
+                sudoku.board = board
+                sudoku.mistake = mistake
+                sudoku.time = time
+                
+                if let encoded = try? JSONEncoder().encode(sudoku) {
+                    UserDefaults.standard.setValue(encoded, forKey: "Sudoku")
+                }
+            })
             .disposed(by: disposeBag)
 
         return Output(
@@ -188,7 +204,4 @@ final class GameViewModel: ViewModelType {
             .disposed(by: disposeBag)
     }
 
-//    func savedSudoku() -> Sudoku {
-//
-//    }
 }

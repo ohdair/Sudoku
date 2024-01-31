@@ -11,24 +11,25 @@ import RxCocoa
 
 class GameViewController: UIViewController {
 
+    // MARK: - NavigationBarButton
     private let backBarButtonItem = UIBarButtonItem.back()
     private let pauseBarButtonItem = UIBarButtonItem.pause()
 
+    // MARK: - UI
     private let informationStackView = InformationStackView()
     private let boardView = BoardView()
     private let abilityStackView = AbilityStackView()
     private let numberStackView = NumberStackView()
-    private let disposeBag = DisposeBag()
-
-    private var informationViewModel: InformationViewModel!
-
-
-    private var gameViewModel: GameViewModel!
 
     private var alertViewController: AlertViewController!
-    private let alertTrigger = PublishRelay<AlertView.Alert>()
 
-    var sudoku: Sudoku!
+    // MARK: - ViewModel
+    private var informationViewModel: InformationViewModel!
+    private var gameViewModel: GameViewModel!
+
+    private let alertTrigger = PublishRelay<AlertView.Alert>()
+    private let viewWillDisappear = PublishRelay<Void>()
+    private let disposeBag = DisposeBag()
 
     convenience init(viewModel: GameViewModel) {
         self.init()
@@ -45,36 +46,37 @@ class GameViewController: UIViewController {
 
         setUI()
         setLayout()
-//        configureSudoku()
-
-        
-        // sudoku fetch 하는 동안
-        // viewmodel 설정을 기다리도록
 
         bindAlertViewModel()
         bindButtons()
         bindGameViewModel()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        viewWillDisappear.accept(())
+    }
+
     func bindGameViewModel() {
         let viewDidLoad = PublishSubject<Void>()
         let timerTrigger = Driver.merge(
-            pauseBarButtonItem.rx.tap.asDriver(),
-            backBarButtonItem.rx.tap.asDriver(),
+            alertTrigger.map { _ in () }.asDriver(onErrorJustReturn: ()),
             alertViewController.alertButton(of: .continue).rx.tap.asDriver()
         )
 
         let newGameTapped = alertViewController.alertButton(of: .new).rx.tap.asDriver()
-        let reGmaeTapped = alertViewController.alertButton(of: .restart).rx.tap.asDriver()
+        let reGameTapped = alertViewController.alertButton(of: .restart).rx.tap.asDriver()
 
         let input = GameViewModel.Input(
             viewDidLoad: viewDidLoad.asObservable(),
             timerTrigger: timerTrigger,
             newGameTapped: newGameTapped,
-            reGameTapped: reGmaeTapped,
+            reGameTapped: reGameTapped,
             cellButtonTapped: cellButtonTapped(),
             abilityButtonTapped: abilityButtonTapped(),
-            numberButtonTapped: numberButtonTapped()
+            numberButtonTapped: numberButtonTapped(),
+            saveGameTrigger: viewWillDisappear.asObservable()
         )
 
         let output = gameViewModel.transform(input: input)
@@ -213,7 +215,7 @@ class GameViewController: UIViewController {
         return Driver.merge(numberButtonDrivers)
     }
 
-    func bindAlertViewModel() {
+    private func bindAlertViewModel() {
         alertTrigger
             .subscribe { _ in
                 self.present(self.alertViewController, animated: true)
@@ -226,7 +228,7 @@ class GameViewController: UIViewController {
         alertViewController.modalPresentationStyle = .overFullScreen
     }
 
-    func bindButtons() {
+    private func bindButtons() {
         // MARK: - NavigationBarItem
         backBarButtonItem.rx.tap
             .subscribe { _ in
@@ -241,15 +243,12 @@ class GameViewController: UIViewController {
             .disposed(by: disposeBag)
 
         // MARK: - AlertButtons of AlertViewController
-        alertViewController.alertButton(of: .continue).rx.tap
-            .asDriver()
-            .drive { _ in
-                self.dismiss(animated: true)
-            }
-            .disposed(by: disposeBag)
-
-        alertViewController.alertButton(of: .new).rx.tap
-            .asDriver()
+        Driver
+            .merge(
+                alertViewController.alertButton(of: .new).rx.tap.asDriver(),
+                alertViewController.alertButton(of: .continue).rx.tap.asDriver(),
+                alertViewController.alertButton(of: .restart).rx.tap.asDriver()
+            )
             .drive { _ in
                 self.dismiss(animated: true)
             }
@@ -258,19 +257,8 @@ class GameViewController: UIViewController {
         alertViewController.alertButton(of: .quit).rx.tap
             .asDriver()
             .drive { _ in
-                if let sudoku = self.sudoku,
-                   let encoded = try? JSONEncoder().encode(sudoku) {
-                    UserDefaults.standard.setValue(encoded, forKey: "Sudoku")
-                }
                 self.dismiss(animated: false)
                 self.navigationController?.popViewController(animated: true)
-            }
-            .disposed(by: disposeBag)
-
-        alertViewController.alertButton(of: .restart).rx.tap
-            .asDriver()
-            .drive { _ in
-                self.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
     }

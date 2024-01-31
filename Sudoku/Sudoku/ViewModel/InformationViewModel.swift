@@ -38,6 +38,10 @@ final class InformationViewModel: ViewModelType {
             }
             .asDriver(onErrorJustReturn: "")
 
+        input.mistake
+            .bind(to: mistake)
+            .disposed(by: disposeBag)
+
         input.mistakeTrigger
             .subscribe { _ in
                 self.updateMistake()
