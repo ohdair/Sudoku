@@ -123,8 +123,11 @@ class GameViewController: UIViewController {
 
         // MARK: - BoardView
         output.boardOutput.cursor
-            .drive { cursor in
+            .do { _ in
                 self.boardView.paintedReset()
+            }
+            .compactMap { $0 }
+            .drive { cursor in
                 self.boardView.paint(to: cursor, into: .selected)
             }
             .disposed(by: disposeBag)
@@ -142,7 +145,7 @@ class GameViewController: UIViewController {
             .disposed(by: disposeBag)
 
         output.boardOutput.cursorState
-            .withLatestFrom(output.boardOutput.cursor) { state, cursor in
+            .withLatestFrom(output.boardOutput.cursor.compactMap({ $0 })) { state, cursor in
                 return (cursor, state)
             }
             .drive { cursor, state in

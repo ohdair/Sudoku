@@ -108,7 +108,8 @@ final class GameViewModel: ViewModelType {
         let informationViewModelOutput = bindingInformationViewModel(timerTrigger: input.timerTrigger)
         let boardViewModelOutput = bindingBoardViewModel(
             cellButtonTapped: input.cellButtonTapped,
-            numberButtonTapped: input.numberButtonTapped
+            numberButtonTapped: input.numberButtonTapped,
+            reformTrigger: Driver.merge(input.reGameTapped, input.newGameTapped)
         )
 
         bindingAbilityViewModel(ability: input.abilityButtonTapped)
@@ -171,7 +172,8 @@ final class GameViewModel: ViewModelType {
 
     private func bindingBoardViewModel(
         cellButtonTapped: Driver<IndexPath>,
-        numberButtonTapped: Driver<Int>
+        numberButtonTapped: Driver<Int>,
+        reformTrigger: Driver<Void>
     ) -> BoardViewModel.Output {
         let observableData = sudoku.map { $0.data }
         let input = BoardViewModel.Input(
@@ -180,7 +182,8 @@ final class GameViewModel: ViewModelType {
             isOnMemo: isOnMemo.asDriver(),
             cellButtonTapped: cellButtonTapped,
             numberButtonTapped: numberButtonTapped,
-            eraseTrigger: eraseTrigger.asDriver(onErrorJustReturn: ())
+            eraseTrigger: eraseTrigger.asDriver(onErrorJustReturn: ()),
+            reformTrigger: reformTrigger
         )
 
         return boardViewModel.transform(input: input)

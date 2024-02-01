@@ -20,11 +20,12 @@ final class BoardViewModel: ViewModelType {
         var cellButtonTapped: Driver<IndexPath>
         var numberButtonTapped: Driver<Int>
         var eraseTrigger: Driver<Void>
+        var reformTrigger: Driver<Void>
     }
 
     struct Output {
         var board: Driver<Board>
-        var cursor: Driver<IndexPath>
+        var cursor: Driver<IndexPath?>
         var cursorState: Driver<CellButton.State>
         var associatedMistake: Driver<[IndexPath]>
         var associatedIndexPaths: Driver<[IndexPath]>
@@ -36,7 +37,7 @@ final class BoardViewModel: ViewModelType {
     private let problem = BehaviorRelay<[[Int]]>(value: [])
     private let solution = BehaviorRelay<[[Int]]>(value: [])
     private let board = BehaviorRelay<Board>(value: [])
-    private let cursor = BehaviorRelay<IndexPath>(value: IndexPath())
+    private let cursor = BehaviorRelay<IndexPath?>(value: nil)
     private let cursorState = BehaviorRelay<CellButton.State>(value: .problem)
     private let isOnMemo = BehaviorRelay<Bool>(value: false)
 
@@ -50,29 +51,29 @@ final class BoardViewModel: ViewModelType {
 
         let updatedBoardToErase = input.eraseTrigger
             .filter { _ in self.isProblemCursor() == false }
-            .map { _ in
-                let cursor = self.cursor.value
+            .compactMap { _ in self.cursor.value }
+            .map { cursor in
                 return 0...8 ~= cursor.section && 0...8 ~= cursor.item
             }
             .filter { $0 }
             .map { _ in SudokuItem() }
-            .map { self.updatedBoard(to: $0, of: self.cursor.value) }
+            .map { self.updatedBoard(to: $0, of: self.cursor.value!) }
 
         let updatedBoardToMemo = input.numberButtonTapped
             .filter { _ in self.isProblemCursor() == false }
             .filter { _ in self.isOnMemo.value }
             .map { self.updatedMemoOfCursor(to: $0) }
-            .map { self.updatedBoard(to: $0, of: self.cursor.value) }
+            .map { self.updatedBoard(to: $0, of: self.cursor.value!) }
 
         let updatedBoardToNumber = input.numberButtonTapped
             .filter { _ in self.isProblemCursor() == false }
             .filter { _ in !self.isOnMemo.value }
             .map { self.updatedNumberOfCursor(to: $0) }
-            .map { self.updatedBoard(to: $0, of: self.cursor.value) }
-        
+            .map { self.updatedBoard(to: $0, of: self.cursor.value!) }
+
         input.board
-            .skip(2)
-            .withLatestFrom(cursor.asDriver())
+            .withLatestFrom(cursor)
+            .compactMap { $0 }
             .subscribe { cursor in
                 self.cursor.accept(cursor)
                 self.acceptAssociatedIndexPaths(with: cursor)
@@ -89,7 +90,7 @@ final class BoardViewModel: ViewModelType {
             .disposed(by: disposeBag)
 
         let associatedMistake = Observable.merge(input.cellButtonTapped.asObservable(),
-                                                 input.board.skip(2).withLatestFrom(cursor))
+                                                 input.board.withLatestFrom(cursor).compactMap({ $0 }))
             .map { _ in self.associatedMistake() }
             .asDriver(onErrorJustReturn: [])
 
@@ -112,7 +113,7 @@ final class BoardViewModel: ViewModelType {
 
         return Output(
             board: Driver.merge(updatedBoardToErase, updatedBoardToMemo, updatedBoardToNumber),
-            cursor: cursor.asDriver().skip(1),
+            cursor: cursor.asDriver(),
             cursorState: cursorState.asDriver(),
             associatedMistake: associatedMistake,
             associatedIndexPaths: associatedIndexPaths.asDriver(),
@@ -144,17 +145,22 @@ final class BoardViewModel: ViewModelType {
         input.isOnMemo
             .drive(isOnMemo)
             .disposed(by: disposeBag)
+
+        input.reformTrigger
+            .map { _ in nil }
+            .drive(cursor)
+            .disposed(by: disposeBag)
     }
 
     private func updatedMemoOfCursor(to number: Int) -> SudokuItem {
-        let cursor = self.cursor.value
+        let cursor = self.cursor.value!
         let item = self.board.value.sudokuItem(of: cursor)
 
         return item.updated(memo: number)
     }
 
     private func updatedNumberOfCursor(to number: Int) -> SudokuItem {
-        let cursor = self.cursor.value
+        let cursor = self.cursor.value!
         let item = self.board.value.sudokuItem(of: cursor)
 
         return item.updated(number: number)
@@ -173,7 +179,10 @@ final class BoardViewModel: ViewModelType {
     }
 
     private func isProblemCursor() -> Bool {
-        let cursor = cursor.value
+        guard let cursor = cursor.value else {
+            return false
+        }
+
         let row = cursor.row()
         let column = cursor.column()
         var isProblem: Bool
@@ -218,7 +227,7 @@ final class BoardViewModel: ViewModelType {
 extension BoardViewModel: IndexPathable {
     fileprivate func associatedMistake() -> [IndexPath] {
         let indexPaths = associatedIndexPaths.value
-        let cursor = cursor.value
+        let cursor = cursor.value!
         let numberOfCursor = board.value.sudokuItem(of: cursor).number
 
         return indexPaths.filter { indexPath in
