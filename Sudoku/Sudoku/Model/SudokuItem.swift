@@ -20,4 +20,15 @@ struct SudokuItem: Codable, Equatable {
         self.memo = Array(repeating: true, count: 9)
         self.number = number
     }
+
+    func updated(memo: Int) -> SudokuItem {
+        var newMemo = self.memo
+        newMemo[memo - 1].toggle()
+
+        return SudokuItem(memo: newMemo)
+    }
+
+    func updated(number: Int) -> Self {
+        return SudokuItem(number: number)
+    }
 }

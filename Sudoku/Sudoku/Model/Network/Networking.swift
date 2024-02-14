@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import RxSwift
 
 struct Networking {
-    private let endpoint = "https://sudoku-api.vercel.app/api/dosuku"
+    static private let endpoint = "https://sudoku-api.vercel.app/api/dosuku"
 
-    func loadData(complition: @escaping (Result<SudokuData, NetworkError>) -> Void) {
+    static private func loadData(complition: @escaping (Result<SudokuData, NetworkError>) -> Void) {
         guard let url = URL(string: endpoint) else {
             complition(.failure(.invalidURL))
             return
@@ -44,5 +45,20 @@ struct Networking {
             complition(.success(decodedData.fetch()))
         }
         .resume()
+    }
+
+    static func request() -> Observable<SudokuData> {
+        return Observable.create { (observe) -> Disposable in
+            self.loadData { result in
+                switch result {
+                case .success(let success):
+                    observe.onNext(success)
+                case .failure(let failure):
+                    observe.onError(failure)
+                }
+                observe.onCompleted()
+            }
+            return Disposables.create()
+        }
     }
 }

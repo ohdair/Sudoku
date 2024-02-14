@@ -39,7 +39,17 @@ class AbilityButton: UIButton {
     }()
 
     let type: Ability
-    private(set) var isOnMemo = false
+    var isOnMemo = false {
+        didSet {
+            if isOnMemo {
+                memoToggleLabel.text = "on"
+                memoToggleLabel.backgroundColor = .mainColor
+            } else {
+                memoToggleLabel.text = "off"
+                memoToggleLabel.backgroundColor = .brightMainColor2
+            }
+        }
+    }
 
     init(of type: Ability) {
         self.type = type
@@ -93,17 +103,6 @@ class AbilityButton: UIButton {
         let imageToString = NSAttributedString(attachment: imageAttachment)
         mutableAttributedString.append(imageToString)
         return mutableAttributedString
-    }
-
-    func toggleMemo() {
-        isOnMemo.toggle()
-        if isOnMemo {
-            memoToggleLabel.text = "on"
-            memoToggleLabel.backgroundColor = .mainColor
-        } else {
-            memoToggleLabel.text = "off"
-            memoToggleLabel.backgroundColor = .brightMainColor2
-        }
     }
 }
 

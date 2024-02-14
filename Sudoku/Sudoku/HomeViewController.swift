@@ -6,11 +6,17 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class HomeViewController: UIViewController {
+
     private let newGameButton = GameButton(title: "New")
     private let continueGameButton = GameButton(title: "Continue", reveralColor: true)
+
     private var savedGame: Sudoku?
+
+    private let disposeBag = DisposeBag()
 
     override func viewWillAppear(_ animated: Bool) {
         if let savedSudoku = UserDefaults.standard.object(forKey: "Sudoku") as? Data,
@@ -26,13 +32,11 @@ class HomeViewController: UIViewController {
 
         setUI()
         setLayout()
+        bind()
     }
 
     private func setUI() {
         view.backgroundColor = .systemBackground
-
-        continueGameButton.addTarget(self, action: #selector(tappedContinueButton), for: .touchDown)
-        newGameButton.addTarget(self, action: #selector(tappedNewGameButton), for: .touchDown)
     }
 
     private func setLayout() {
@@ -55,16 +59,24 @@ class HomeViewController: UIViewController {
         ])
     }
 
-    @objc func tappedNewGameButton(_ sender: UIButton) {
-        let gameViewController = GameViewController()
-        self.navigationController?.pushViewController(gameViewController, animated: true)
+    private func bind() {
+        newGameButton.rx.tap
+            .asDriver()
+            .drive { _ in
+                let gameViewController = GameViewController()
+                self.navigationController?.pushViewController(gameViewController, animated: true)
+            }
+            .disposed(by: disposeBag)
+
+        continueGameButton.rx.tap
+            .asDriver()
+            .drive { _ in
+                let gameViewModel = GameViewModel(sudoku: self.savedGame!)
+                let gameViewController = GameViewController(viewModel: gameViewModel)
+
+                self.navigationController?.pushViewController(gameViewController, animated: true)
+            }
+            .disposed(by: disposeBag)
     }
 
-    @objc func tappedContinueButton(_ sender: UIButton) {
-        let gameViewController = GameViewController()
-        gameViewController.sudoku = savedGame
-
-        self.navigationController?.pushViewController(gameViewController, animated: true)
-    }
 }
-

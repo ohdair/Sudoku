@@ -7,14 +7,15 @@
 
 import UIKit
 
-class AlertView: UIView {
-    private let titleLabel = UILabel()
+final class AlertView: UIView {
+
     private let stackView = UIStackView()
 
-    let continueButton = GameButton(title: "게임 재개", reveralColor: true)
-    let restartButton = GameButton(title: "다시 시작", reveralColor: true)
-    let newGameButton = GameButton(title: "새 게임", reveralColor: true)
-    let backGameButton = GameButton(title: "나가기", reveralColor: true)
+    let titleLabel = UILabel()
+    let continueButton = AlertButton(type: .continue)
+    let restartButton = AlertButton(type: .restart)
+    let newGameButton = AlertButton(type: .new)
+    let quitGameButton = AlertButton(type: .quit)
 
     override init(frame: CGRect) {
         super.init(frame: .zero)
@@ -34,9 +35,6 @@ class AlertView: UIView {
 
         stackView.axis = .vertical
         stackView.spacing = 20
-
-        backGameButton.configuration?.baseBackgroundColor = .red.withAlphaComponent(0.8)
-        newGameButton.configuration?.baseBackgroundColor = .red.withAlphaComponent(0.8)
     }
 
     private func setLayout() {
@@ -46,7 +44,7 @@ class AlertView: UIView {
         stackView.addArrangedSubview(continueButton)
         stackView.addArrangedSubview(restartButton)
         stackView.addArrangedSubview(newGameButton)
-        stackView.addArrangedSubview(backGameButton)
+        stackView.addArrangedSubview(quitGameButton)
 
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -62,45 +60,40 @@ class AlertView: UIView {
         ])
     }
 
-    func configure(type: AlertView.Alert) {
-        switch type {
-        case .pause:
-            titleLabel.text = "일시정지"
-            titleLabel.font = .systemFont(ofSize: 26, weight: .bold)
-            continueButton.isHidden = false
-            restartButton.isHidden = true
-            newGameButton.isHidden = false
-            backGameButton.isHidden = true
-        case .back:
-            titleLabel.text = "게임을 종료하시겠습니까?"
-            titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
-            continueButton.isHidden = false
-            restartButton.isHidden = true
-            newGameButton.isHidden = true
-            backGameButton.isHidden = false
-        case .overMistake:
-            titleLabel.text = "실수를 초과하였습니다."
-            titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
-            continueButton.isHidden = true
-            restartButton.isHidden = false
-            newGameButton.isHidden = false
-            backGameButton.isHidden = true
-        case .error:
-            titleLabel.text = "네트워크 문제가 발생하였습니다."
-            titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
-            continueButton.isHidden = true
-            restartButton.isHidden = true
-            newGameButton.isHidden = true
-            backGameButton.isHidden = false
-        }
-    }
 }
 
 extension AlertView {
+
     enum Alert {
         case pause
         case back
         case overMistake
         case error
+        case success
+
+        var title: String {
+            switch self {
+            case .pause:
+                "일시정지"
+            case .back:
+                "게임을 종료하시겠습니까?"
+            case .overMistake:
+                "실수를 초과하였습니다."
+            case .error:
+                "네트워크 문제가 발생하였습니다."
+            case .success:
+                "성공에 축하합니다."
+            }
+        }
+
+        var titleFontSize: CGFloat {
+            switch self {
+            case .pause, .success:
+                26
+            default:
+                20
+            }
+        }
     }
+
 }

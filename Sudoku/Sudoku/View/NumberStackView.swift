@@ -8,6 +8,9 @@
 import UIKit
 
 class NumberStackView: UIStackView {
+
+    private(set) var numberButtons = [NumberButton]()
+
     override init(frame: CGRect) {
         super.init(frame: .zero)
 
@@ -20,7 +23,9 @@ class NumberStackView: UIStackView {
 
     private func setUI() {
         stride(from: 1, through: 9, by: 1).forEach { number in
-            addArrangedSubview(NumberButton(number: number))
+            let button = NumberButton(number: number)
+            numberButtons.append(button)
+            addArrangedSubview(button)
         }
 
         distribution = .equalCentering

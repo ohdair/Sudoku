@@ -16,7 +16,7 @@ class InformationView: UIView {
         return imageViewLabel
     }()
 
-    private let contentLabel = {
+    let contentLabel = {
         let imageViewLabel = UILabel()
         imageViewLabel.font = .systemFont(ofSize: 13, weight: .bold)
         imageViewLabel.textColor = .brightMainColor1
@@ -24,14 +24,11 @@ class InformationView: UIView {
         return imageViewLabel
     }()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    convenience init(type: Information) {
+        self.init()
 
+        titleLabel.text = type.title
         setLayout()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     private func setLayout() {
@@ -52,25 +49,13 @@ class InformationView: UIView {
             contentLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor),
         ])
     }
-
-    func updateContent(by type: Information) {
-        titleLabel.text = type.title
-        switch type {
-        case .difficulty(let content):
-            contentLabel.text = content
-        case .mistake(let content):
-            contentLabel.text = "\(content) / 3"
-        case .timer(let content):
-            contentLabel.text = content.time
-        }
-    }
 }
 
 extension InformationView {
     enum Information {
-        case difficulty(content: String)
-        case mistake(content: Int)
-        case timer(content: TimeInterval)
+        case difficulty
+        case mistake
+        case timer
 
         fileprivate var title: String {
             switch self {

@@ -23,4 +23,21 @@ extension Array where Element: Collection {
             }
         }
     }
+
+    func mapMatrix<T>(_ transform: (Element.Element) -> T) -> [[T]] {
+        return self.map { elements in
+            elements.map { element in
+                transform(element)
+            }
+        }
+    }
+}
+
+extension Array where Element: Collection, Element.Index == Int, Element.Element == SudokuItem {
+    func sudokuItem(of indexPath: IndexPath) -> SudokuItem {
+        let row = indexPath.row()
+        let column = indexPath.column()
+
+        return self[row][column]
+    }
 }

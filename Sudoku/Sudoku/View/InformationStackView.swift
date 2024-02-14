@@ -8,9 +8,9 @@
 import UIKit
 
 class InformationStackView: UIStackView {
-    private let difficultyView = InformationView()
-    private let mistakeView = InformationView()
-    private let timerView = InformationView()
+    private let difficultyView = InformationView(type: .difficulty)
+    private let mistakeView = InformationView(type: .mistake)
+    private let timerView = InformationView(type: .timer)
 
     override init(frame: CGRect) {
         super.init(frame: .zero)
@@ -30,14 +30,14 @@ class InformationStackView: UIStackView {
         distribution = .fillEqually
     }
 
-    func configure(_ information: InformationView.Information) {
+    func label(of information: InformationView.Information) -> UILabel {
         switch information {
         case .difficulty:
-            difficultyView.updateContent(by: information)
+            difficultyView.contentLabel
         case .mistake:
-            mistakeView.updateContent(by: information)
+            mistakeView.contentLabel
         case .timer:
-            timerView.updateContent(by: information)
+            timerView.contentLabel
         }
     }
 }
