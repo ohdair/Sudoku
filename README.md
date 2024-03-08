@@ -1,6 +1,15 @@
 # Sudoku
 MVC패턴으로 작성된 코드를 RxSwift 적용하여 MVVM으로 리팩터링한 스도쿠 게임
 
+## 게임 화면
+
+|홈 화면|게임 화면|종료 화면|
+|:---:|:---:|:---:|
+|<img width=200 src="https://github.com/ohdair/Sudoku/assets/79438622/3c9e3b25-2094-4260-b593-82aa0b143138">|<img width=200 src="https://github.com/ohdair/Sudoku/assets/79438622/e0a90280-435d-4063-8e3d-6deb7ae176dd">|<img width=200 src="https://github.com/ohdair/Sudoku/assets/79438622/86664837-18fd-4cfa-ad24-f970f12f885f">|
+
+
+
+
 ## UI 설계 및 플로우에 따른 다이어그램
 <img width="600" src="https://github.com/ohdair/Sudoku/assets/79438622/204986c7-ea57-49ee-9619-17d68af783b6">
 <img width="600" alt="스크린샷 2024-02-25 오후 5 16 44" src="https://github.com/ohdair/Sudoku/assets/79438622/223b730b-3a3e-4346-b2c7-5617611a56a2">
