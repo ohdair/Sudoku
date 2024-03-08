@@ -13,6 +13,7 @@ class HomeViewController: UIViewController {
 
     private let newGameButton = GameButton(title: "New")
     private let continueGameButton = GameButton(title: "Continue", reveralColor: true)
+    private let logoView = UIImageView()
 
     private var savedGame: Sudoku?
 
@@ -37,14 +38,18 @@ class HomeViewController: UIViewController {
 
     private func setUI() {
         view.backgroundColor = .systemBackground
+
+        logoView.image = .logo
     }
 
     private func setLayout() {
         view.addSubview(newGameButton)
         view.addSubview(continueGameButton)
+        view.addSubview(logoView)
 
         newGameButton.translatesAutoresizingMaskIntoConstraints = false
         continueGameButton.translatesAutoresizingMaskIntoConstraints = false
+        logoView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             newGameButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.65),
@@ -55,7 +60,12 @@ class HomeViewController: UIViewController {
             continueGameButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.65),
             continueGameButton.heightAnchor.constraint(equalToConstant: 60),
             continueGameButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            continueGameButton.bottomAnchor.constraint(equalTo: newGameButton.topAnchor, constant: -30)
+            continueGameButton.bottomAnchor.constraint(equalTo: newGameButton.topAnchor, constant: -30),
+
+            logoView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.6),
+            logoView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.6),
+            logoView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -110)
         ])
     }
 
